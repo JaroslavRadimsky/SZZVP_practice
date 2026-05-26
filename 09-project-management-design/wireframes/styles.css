@@ -1,0 +1,104 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #1d2329;
+    background: #f5f7fa;
+}
+
+aside {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 210px;
+    padding: 22px;
+    background: #243447;
+    color: white;
+    box-sizing: border-box;
+}
+
+aside a {
+    display: block;
+    color: white;
+    text-decoration: none;
+    margin-top: 16px;
+}
+
+main {
+    margin-left: 210px;
+}
+
+.screen {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    min-height: 80vh;
+}
+
+.stats, .project-list, .two-col, .board {
+    display: grid;
+    gap: 16px;
+}
+
+.stats {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.project-list, .two-col {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    margin-top: 18px;
+}
+
+.board {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.stats div, article, .panel, .column {
+    background: white;
+    border: 1px solid #d8dee6;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.stats strong {
+    display: block;
+    font-size: 34px;
+    margin-top: 8px;
+}
+
+input, textarea, select, button {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 11px;
+    margin: 7px 0;
+    border: 1px solid #cad3df;
+    border-radius: 6px;
+    font: inherit;
+}
+
+button {
+    border: 0;
+    background: #2f647d;
+    color: white;
+}
+
+.card {
+    background: #eef3f7;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 10px 0;
+}
+
+@media (max-width: 800px) {
+    aside {
+        position: static;
+        width: auto;
+    }
+
+    main {
+        margin-left: 0;
+    }
+
+    .board {
+        grid-template-columns: 1fr;
+    }
+}
+

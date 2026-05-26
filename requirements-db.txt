@@ -1,0 +1,11 @@
+pandas>=2.2
+numpy>=2.0
+matplotlib>=3.9
+scikit-learn>=1.5
+psycopg[binary]>=3.2
+pymongo>=4.10
+jupyter>=1.1
+nbconvert>=7.16
+nbformat>=5.10
+ipykernel>=6.29
+

@@ -1,0 +1,58 @@
+@startuml
+class TreeParameters {
+  +Iterations: int
+  +AngleDegrees: double
+  +Shortening: double
+  +Color: string
+  +Validate()
+}
+
+class Branch {
+  +X1: double
+  +Y1: double
+  +X2: double
+  +Y2: double
+  +Level: int
+}
+
+class TreeDocument {
+  +Parameters: TreeParameters
+  +Branches: List<Branch>
+}
+
+class PauseToken {
+  +IsPaused: bool
+  +Pause()
+  +Resume()
+  +WaitWhilePausedAsync()
+}
+
+class FractalGenerator {
+  +GenerateAsync(parameters, progress, pauseToken, cancellationToken)
+}
+
+class JsonTreeStore {
+  +SaveAsync(path, document)
+  +LoadAsync(path)
+}
+
+class MainWindow {
+  -Start_Click()
+  -Pause_Click()
+  -Resume_Click()
+  -Stop_Click()
+  -Export_Click()
+  -Import_Click()
+}
+
+TreeDocument o-- TreeParameters
+TreeDocument o-- Branch
+FractalGenerator --> TreeParameters
+FractalGenerator --> Branch
+FractalGenerator --> PauseToken
+JsonTreeStore --> TreeDocument
+MainWindow --> FractalGenerator
+MainWindow --> JsonTreeStore
+MainWindow --> PauseToken
+@enduml
+

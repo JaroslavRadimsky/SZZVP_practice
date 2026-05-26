@@ -1,0 +1,31 @@
+@startuml
+left to right direction
+actor "Clen tymu" as Member
+actor "Projektovy manazer" as Manager
+actor "System exportu" as Export
+
+rectangle "Sprava projektu" {
+  usecase "Vytvorit projekt" as UC1
+  usecase "Spravovat cleny tymu" as UC2
+  usecase "Pridat ukol" as UC3
+  usecase "Aktualizovat stav ukolu" as UC4
+  usecase "Komentovat v chatu" as UC5
+  usecase "Pripojit soubor nebo odkaz" as UC6
+  usecase "Zobrazit dashboard" as UC7
+  usecase "Generovat report" as UC8
+  usecase "Exportovat report" as UC9
+  usecase "Spravovat role" as UC10
+}
+
+Manager --> UC1
+Manager --> UC2
+Manager --> UC8
+Manager --> UC10
+Member --> UC3
+Member --> UC4
+Member --> UC5
+Member --> UC6
+Member --> UC7
+UC8 --> UC9 : include
+Export --> UC9
+@enduml

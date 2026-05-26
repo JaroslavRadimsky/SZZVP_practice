@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hotel Reservation Wireframes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<nav>
+    <strong>Penzion River</strong>
+    <a href="#home">Hlavni stranka</a>
+    <a href="#reservation">Rezervace</a>
+    <a href="#profile">Profil</a>
+    <a href="#feedback">Zpetna vazba</a>
+</nav>
+
+<section id="home" class="screen">
+    <div class="hero">
+        <div>
+            <h1>Penzion River</h1>
+            <p>Vyhledani pokoju podle data, poctu osob, ceny a vybaveni.</p>
+        </div>
+        <form class="search">
+            <input placeholder="Prijezd">
+            <input placeholder="Odjezd">
+            <input placeholder="Pocet osob">
+            <button>Vyhledat</button>
+        </form>
+    </div>
+    <div class="results">
+        <article>
+            <div class="photo">Foto pokoje</div>
+            <h2>Pokoj Comfort</h2>
+            <p>Wi-fi, snidane, vlastni koupelna.</p>
+            <button>Detail</button>
+        </article>
+        <article>
+            <div class="photo">Foto pokoje</div>
+            <h2>Apartman Family</h2>
+            <p>4 osoby, kuchynsky kout, balkon.</p>
+            <button>Detail</button>
+        </article>
+    </div>
+</section>
+
+<section id="reservation" class="screen">
+    <h1>Rezervace pokoje</h1>
+    <div class="two-col">
+        <div class="panel">
+            <h2>Udaje hosta</h2>
+            <input placeholder="Jmeno">
+            <input placeholder="E-mail">
+            <input placeholder="Telefon">
+            <textarea placeholder="Specialni pozadavky"></textarea>
+        </div>
+        <div class="panel">
+            <h2>Souhrn</h2>
+            <p>Pokoj Comfort, 2 noci, 2 osoby</p>
+            <p>Platebni metoda: karta / prevod / online platforma</p>
+            <button>Potvrdit a zaplatit</button>
+        </div>
+    </div>
+</section>
+
+<section id="profile" class="screen">
+    <h1>Profil uzivatele</h1>
+    <div class="two-col">
+        <div class="panel">
+            <h2>Osobni udaje</h2>
+            <input value="Jana Novakova">
+            <input value="jana@example.com">
+            <button>Ulozit zmeny</button>
+            <button>Zmenit heslo</button>
+        </div>
+        <div class="panel">
+            <h2>Rezervace</h2>
+            <p>#1024 - Pokoj Comfort - naplanovana</p>
+            <p>#0991 - Apartman Family - dokoncena</p>
+            <button>Upravit rezervaci</button>
+        </div>
+    </div>
+</section>
+
+<section id="feedback" class="screen">
+    <h1>Zpetna vazba</h1>
+    <div class="two-col">
+        <form class="panel">
+            <h2>Nova recenze</h2>
+            <input placeholder="Hodnoceni 1-5">
+            <textarea placeholder="Text recenze"></textarea>
+            <button>Odeslat</button>
+        </form>
+        <div class="panel">
+            <h2>Reakce penzionu</h2>
+            <p>Host: Skvela snidane a cisty pokoj.</p>
+            <textarea placeholder="Odpoved provozovatele"></textarea>
+            <button>Publikovat odpoved</button>
+        </div>
+    </div>
+</section>
+</body>
+</html>
+

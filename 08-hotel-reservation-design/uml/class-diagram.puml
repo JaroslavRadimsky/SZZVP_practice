@@ -1,0 +1,55 @@
+@startuml
+class User {
+  +id: Guid
+  +name: string
+  +email: string
+  +phone: string
+}
+
+class Accommodation {
+  +id: Guid
+  +name: string
+  +address: string
+  +rating(): decimal
+}
+
+class Room {
+  +id: Guid
+  +number: string
+  +capacity: int
+  +pricePerNight: decimal
+  +amenities: string[]
+}
+
+class Reservation {
+  +id: Guid
+  +from: Date
+  +to: Date
+  +status: ReservationStatus
+  +totalPrice: decimal
+  +confirm()
+  +cancel()
+}
+
+class Payment {
+  +id: Guid
+  +method: PaymentMethod
+  +amount: decimal
+  +status: PaymentStatus
+}
+
+class Review {
+  +id: Guid
+  +rating: int
+  +text: string
+  +response: string
+}
+
+Accommodation "1" o-- "*" Room
+User "1" -- "*" Reservation
+Room "1" -- "*" Reservation
+Reservation "1" -- "1" Payment
+Accommodation "1" -- "*" Review
+User "1" -- "*" Review
+@enduml
+

@@ -1,0 +1,12 @@
+@startuml
+[*] --> Backlog
+Backlog --> Todo : schvalen k realizaci
+Todo --> InProgress : clen zacal praci
+InProgress --> Review : prace dokoncena
+Review --> Done : prijato
+Review --> InProgress : vraceno k uprave
+Todo --> Archived : zruseno
+Done --> Archived : archivace projektu
+Archived --> [*]
+@enduml
+

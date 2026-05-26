@@ -1,0 +1,22 @@
+@startuml
+start
+:Vyber projektu;
+:Otevri formular ukolu;
+:Zadej nazev, popis, prioritu a termin;
+if (Je prirazeny clen?) then (ano)
+  :Uloz ukol;
+else (ne)
+  :Vyber clena tymu;
+  :Uloz ukol;
+endif
+:Zobraz ukol na nastence;
+while (Ukol neni hotovy?) is (ano)
+  :Aktualizuj stav nebo komentar;
+  if (Je potreba priloha?) then (ano)
+    :Pripoj soubor nebo odkaz;
+  endif
+endwhile (ne)
+:Zahrn ukol do reportu;
+stop
+@enduml
+

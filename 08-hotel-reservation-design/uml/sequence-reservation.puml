@@ -1,0 +1,24 @@
+@startuml
+actor Host
+participant "Web UI" as UI
+participant "ReservationService" as Service
+participant "RoomRepository" as Rooms
+participant "PaymentGateway" as Payment
+participant "EmailService" as Email
+
+Host -> UI : zada datum, pocet osob a filtry
+UI -> Service : search(criteria)
+Service -> Rooms : findAvailable(criteria)
+Rooms --> Service : dostupne pokoje
+Service --> UI : vysledky
+Host -> UI : vybere pokoj a potvrdi udaje
+UI -> Service : createReservation(request)
+Service -> Rooms : lockRoom(roomId, dates)
+Service -> Payment : charge(paymentData, amount)
+Payment --> Service : potvrzeni platby
+Service -> Rooms : confirmReservation()
+Service -> Email : sendConfirmation()
+Service --> UI : rezervace potvrzena
+UI --> Host : cislo rezervace
+@enduml
+

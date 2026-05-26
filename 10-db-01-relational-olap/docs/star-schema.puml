@@ -1,0 +1,44 @@
+@startuml
+rectangle "Fact: foreigner_counts" as F {
+  country_id
+  sex_id
+  age_group_id
+  region_id
+  year
+  count_value
+}
+
+rectangle "Dim: countries" as C {
+  iso3
+  csu_name
+  world_bank_name
+}
+
+rectangle "Dim: sexes" as S {
+  code
+  label
+}
+
+rectangle "Dim: age_groups" as A {
+  code
+  label
+}
+
+rectangle "Dim: regions" as R {
+  code
+  label
+}
+
+rectangle "Fact: gdp_per_capita" as G {
+  country_id
+  year
+  gdp_per_capita_usd
+}
+
+F --> C
+F --> S
+F --> A
+F --> R
+G --> C
+@enduml
+

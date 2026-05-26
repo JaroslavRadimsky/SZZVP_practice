@@ -1,0 +1,28 @@
+plugins {
+    id "com.android.application"
+}
+
+android {
+    namespace "cz.ujep.rssreader"
+    compileSdk 36
+
+    defaultConfig {
+        applicationId "cz.ujep.rssreader"
+        minSdk 26
+        targetSdk 36
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation "androidx.recyclerview:recyclerview:1.4.0"
+    implementation "androidx.work:work-runtime:2.10.0"
+    testImplementation "junit:junit:4.13.2"
+}

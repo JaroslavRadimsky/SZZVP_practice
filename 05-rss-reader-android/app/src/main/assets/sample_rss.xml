@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>UJEP offline RSS demo</title>
+    <link>https://example.com/rss</link>
+    <description>Ukazkovy kanal pro testovani aplikace bez internetu.</description>
+    <item>
+      <title>Offline zprava: aplikace umi nacist RSS</title>
+      <link>https://example.com/rss/offline-1</link>
+      <description>Tato polozka je ulozena primo v aplikaci a overuje parser, ulozeni do SQLite i zobrazeni v seznamu.</description>
+      <pubDate>Tue, 26 May 2026 10:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Offline zprava: detail se otevira ve druhe aktivite</title>
+      <link>https://example.com/rss/offline-2</link>
+      <description>Klepnutim na tuto zpravu se otevre DetailActivity s titulkem, popisem, odkazem a datem publikovani.</description>
+      <pubDate>Tue, 26 May 2026 11:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Offline zprava: cache funguje i po restartu</title>
+      <link>https://example.com/rss/offline-3</link>
+      <description>Po nacteni demo dat jsou zpravy ulozene do SQLite cache a zustanou dostupne i bez site.</description>
+      <pubDate>Tue, 26 May 2026 12:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

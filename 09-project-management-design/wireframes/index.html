@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Management Wireframes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<aside>
+    <strong>TeamFlow</strong>
+    <a href="#home">Domu</a>
+    <a href="#project">Projekt</a>
+    <a href="#task">Novy ukol</a>
+    <a href="#board">Nastenka</a>
+</aside>
+
+<main>
+    <section id="home" class="screen">
+        <h1>Dashboard tymu</h1>
+        <div class="stats">
+            <div>Aktivni projekty <strong>6</strong></div>
+            <div>Ukoly po terminu <strong>3</strong></div>
+            <div>Dokonceno tento tyden <strong>18</strong></div>
+        </div>
+        <div class="project-list">
+            <article>
+                <h2>Web klienta</h2>
+                <p>Termin 30.06.2026, 7 clenu, 68 % hotovo</p>
+            </article>
+            <article>
+                <h2>Mobilni aplikace</h2>
+                <p>Termin 15.07.2026, 5 clenu, 42 % hotovo</p>
+            </article>
+        </div>
+    </section>
+
+    <section id="project" class="screen">
+        <h1>Stranka projektu</h1>
+        <div class="two-col">
+            <div class="panel">
+                <h2>Detail projektu</h2>
+                <input value="Web klienta">
+                <textarea>Implementace zakaznickeho portalu.</textarea>
+                <input value="30.06.2026">
+                <button>Ulozit projekt</button>
+            </div>
+            <div class="panel">
+                <h2>Tym</h2>
+                <p>Jana - manager</p>
+                <p>Petr - vyvojar</p>
+                <p>Eva - tester</p>
+                <button>Pridat clena</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="task" class="screen">
+        <h1>Pridani ukolu</h1>
+        <form class="panel task-form">
+            <input placeholder="Nazev ukolu">
+            <textarea placeholder="Popis"></textarea>
+            <select>
+                <option>Vysoka priorita</option>
+                <option>Stredni priorita</option>
+                <option>Nizka priorita</option>
+            </select>
+            <input placeholder="Termin">
+            <select>
+                <option>Jana</option>
+                <option>Petr</option>
+                <option>Eva</option>
+            </select>
+            <input placeholder="Odkaz nebo soubor">
+            <button>Vytvorit ukol</button>
+        </form>
+    </section>
+
+    <section id="board" class="screen">
+        <h1>Nastenka pokroku</h1>
+        <div class="board">
+            <div class="column">
+                <h2>K provedeni</h2>
+                <div class="card">Navrh API</div>
+                <div class="card">Pripravit test data</div>
+            </div>
+            <div class="column">
+                <h2>Ve vyvoji</h2>
+                <div class="card">Login obrazovka</div>
+            </div>
+            <div class="column">
+                <h2>Hotovo</h2>
+                <div class="card">Databazove schema</div>
+            </div>
+        </div>
+        <div class="panel">
+            <h2>Report</h2>
+            <p>Grafy, statistiky a export PDF/CSV.</p>
+            <button>Export CSV</button>
+        </div>
+    </section>
+</main>
+</body>
+</html>
+

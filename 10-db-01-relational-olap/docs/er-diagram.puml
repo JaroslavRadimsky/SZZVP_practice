@@ -1,0 +1,57 @@
+@startuml
+entity countries {
+  * country_id : serial <<PK>>
+  --
+  iso3 : char(3)
+  csu_name : text <<unique>>
+  world_bank_name : text
+}
+
+entity sexes {
+  * sex_id : serial <<PK>>
+  --
+  code : text <<unique>>
+  label : text
+}
+
+entity age_groups {
+  * age_group_id : serial <<PK>>
+  --
+  code : text <<unique>>
+  label : text
+}
+
+entity regions {
+  * region_id : serial <<PK>>
+  --
+  code : text <<unique>>
+  label : text
+}
+
+entity foreigner_counts {
+  * count_id : serial <<PK>>
+  --
+  country_id : int <<FK>>
+  sex_id : int <<FK>>
+  age_group_id : int <<FK>>
+  region_id : int <<FK>>
+  year : int
+  residence_type : text
+  count_value : int
+}
+
+entity gdp_per_capita {
+  * gdp_id : serial <<PK>>
+  --
+  country_id : int <<FK>>
+  year : int
+  gdp_per_capita_usd : numeric
+}
+
+countries ||--o{ foreigner_counts
+sexes ||--o{ foreigner_counts
+age_groups ||--o{ foreigner_counts
+regions ||--o{ foreigner_counts
+countries ||--o{ gdp_per_capita
+@enduml
+

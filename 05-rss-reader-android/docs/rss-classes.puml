@@ -1,0 +1,52 @@
+@startuml
+class MainActivity {
+  -loadFeed()
+  -refreshFromDatabase()
+  -openDetail(item)
+  -scheduleRefresh()
+}
+
+class DetailActivity
+
+class RssItem {
+  +id: long
+  +title: String
+  +link: String
+  +description: String
+  +publishedAt: long
+  +fetchedAt: long
+}
+
+class RssParser {
+  +parse(stream, fetchedAt): List<RssItem>
+}
+
+class RssFetcher {
+  +fetch(url): List<RssItem>
+}
+
+class RssDatabase {
+  +upsert(items)
+  +listRelevant(): List<RssItem>
+}
+
+class RssAdapter {
+  +setItems(items)
+}
+
+class RssWorker {
+  +doWork(): Result
+}
+
+MainActivity --> RssFetcher
+MainActivity --> RssDatabase
+MainActivity --> RssAdapter
+MainActivity --> DetailActivity
+RssFetcher --> RssParser
+RssParser --> RssItem
+RssDatabase --> RssItem
+RssAdapter --> RssItem
+RssWorker --> RssFetcher
+RssWorker --> RssDatabase
+@enduml
+

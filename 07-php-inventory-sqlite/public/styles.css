@@ -1,0 +1,82 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f6f8;
+    color: #182026;
+}
+
+main {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel {
+    background: white;
+    border: 1px solid #d8dee4;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 14px 0;
+}
+
+.login {
+    max-width: 360px;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(100px, 1fr)) auto auto;
+    gap: 8px;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.order {
+    grid-template-columns: 2fr 2fr 100px 140px;
+}
+
+.order-line {
+    grid-template-columns: 1fr 180px 140px;
+}
+
+input, select, button {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 9px;
+    border: 1px solid #ccd4dd;
+    border-radius: 6px;
+    font: inherit;
+}
+
+button {
+    border: 0;
+    background: #315f72;
+    color: white;
+    cursor: pointer;
+}
+
+.message {
+    background: #fff3cd;
+    border: 1px solid #ffe69c;
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.low {
+    background: #fff1f0;
+    border-left: 4px solid #c2410c;
+    padding-left: 8px;
+}
+
+@media (max-width: 900px) {
+    .row, .order, .order-line, header {
+        display: block;
+    }
+}
+
