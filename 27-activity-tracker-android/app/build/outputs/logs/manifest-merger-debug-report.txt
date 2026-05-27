@@ -1,0 +1,99 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+	package
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:2:5-38
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:1-35:12
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:1:11-69
+uses-permission#android.permission.ACTIVITY_RECOGNITION
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:4:5-79
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:4:22-76
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:5:5-79
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:5:22-76
+uses-feature#android.hardware.sensor.accelerometer
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:7:5-9:36
+	android:required
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:9:9-33
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:8:9-61
+uses-feature#android.hardware.sensor.stepcounter
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:10:5-12:36
+	android:required
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:12:9-33
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:11:9-59
+uses-feature#android.hardware.location.gps
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:13:5-15:36
+	android:required
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:15:9-33
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:14:9-53
+application
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:17:5-34:19
+	android:label
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:19:9-41
+	android:allowBackup
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:18:9-35
+	android:theme
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:20:9-40
+activity#cz.ujep.activitytracker.MeasurementDetailActivity
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:21:9-63
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:21:19-60
+activity#cz.ujep.activitytracker.TrackingActivity
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:22:9-25:46
+	android:launchMode
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:25:13-43
+	android:configChanges
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:24:13-59
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:23:13-45
+activity#cz.ujep.activitytracker.MainActivity
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:26:9-33:20
+	android:exported
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:28:13-36
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:27:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:29:13-32:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:30:17-69
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:30:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:31:17-77
+	android:name
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:31:27-74
+uses-sdk
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml

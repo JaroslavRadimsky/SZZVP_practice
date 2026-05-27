@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\build\\intermediates\\res\\merged\\debug\\layout_list_item_measurement.xml.flat",
+        "source": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\src\\main\\res\\layout\\list_item_measurement.xml"
+    },
+    {
+        "merged": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_detail.xml.flat",
+        "source": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\src\\main\\res\\layout\\activity_detail.xml"
+    },
+    {
+        "merged": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_main.xml.flat",
+        "source": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\src\\main\\res\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\build\\intermediates\\res\\merged\\debug\\drawable_ic_activity_notification.xml.flat",
+        "source": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\src\\main\\res\\drawable\\ic_activity_notification.xml"
+    },
+    {
+        "merged": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_tracking.xml.flat",
+        "source": "C:\\Users\\student.CPTO\\code\\SZZVP_practice\\27-activity-tracker-android\\app\\src\\main\\res\\layout\\activity_tracking.xml"
+    }
+]

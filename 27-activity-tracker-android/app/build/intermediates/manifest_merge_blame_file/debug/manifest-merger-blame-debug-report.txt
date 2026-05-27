@@ -1,0 +1,80 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="cz.ujep.activitytracker"
+4    android:versionCode="1"
+5    android:versionName="1.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="23"
+8-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="29" />
+9-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
+11-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:4:5-79
+11-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:4:22-76
+12    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+12-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:5:5-79
+12-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:5:22-76
+13
+14    <uses-feature
+14-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:7:5-9:36
+15        android:name="android.hardware.sensor.accelerometer"
+15-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:8:9-61
+16        android:required="false" />
+16-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:9:9-33
+17    <uses-feature
+17-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:10:5-12:36
+18        android:name="android.hardware.sensor.stepcounter"
+18-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:11:9-59
+19        android:required="false" />
+19-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:12:9-33
+20    <uses-feature
+20-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:13:5-15:36
+21        android:name="android.hardware.location.gps"
+21-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:14:9-53
+22        android:required="false" />
+22-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:15:9-33
+23
+24    <application
+24-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:17:5-34:19
+25        android:allowBackup="true"
+25-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:18:9-35
+26        android:debuggable="true"
+27        android:extractNativeLibs="false"
+28        android:label="@string/app_name"
+28-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:19:9-41
+29        android:testOnly="true"
+30        android:theme="@style/AppTheme" >
+30-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:20:9-40
+31        <activity android:name="cz.ujep.activitytracker.MeasurementDetailActivity" />
+31-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:21:9-63
+31-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:21:19-60
+32        <activity
+32-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:22:9-25:46
+33            android:name="cz.ujep.activitytracker.TrackingActivity"
+33-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:23:13-45
+34            android:configChanges="orientation|screenSize"
+34-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:24:13-59
+35            android:launchMode="singleTop" />
+35-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:25:13-43
+36        <activity
+36-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:26:9-33:20
+37            android:name="cz.ujep.activitytracker.MainActivity"
+37-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:27:13-41
+38            android:exported="true" >
+38-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:28:13-36
+39            <intent-filter>
+39-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:29:13-32:29
+40                <action android:name="android.intent.action.MAIN" />
+40-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:30:17-69
+40-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:30:25-66
+41
+42                <category android:name="android.intent.category.LAUNCHER" />
+42-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:31:17-77
+42-->C:\Users\student.CPTO\code\SZZVP_practice\27-activity-tracker-android\app\src\main\AndroidManifest.xml:31:27-74
+43            </intent-filter>
+44        </activity>
+45    </application>
+46
+47</manifest>
