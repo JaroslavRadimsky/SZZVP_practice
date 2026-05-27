@@ -1,76 +1,76 @@
-# Vyvojarska dokumentace
+# Vývojářská dokumentace
 
 ## Architektura
 
-Aplikace navazuje na jednoduche vrstveni z projektu `05-rss-reader-android`:
+Aplikace navazuje na jednoduché vrstvení z projektu `05-rss-reader-android`:
 
-- `MainActivity` zobrazuje historii mereni a spousti samostatnou obrazovku mereni.
-- `TrackingActivity` bezi po dobu aktivity, cte senzory a GPS, uklada vzorky a zobrazuje notifikaci.
-- `MeasurementDetailActivity` zobrazuje detail jednoho mereni, prepinatelny graf a export CSV.
-- `MeasurementAdapter` prevadi zaznamy z databaze na radky v `ListView` a predava pozadavek na smazani.
-- `ActivityDatabase` uklada mereni a vzorky do SQLite pres `SQLiteOpenHelper`.
-- `ActivityRecord` reprezentuje souhrn mereni.
-- `ActivitySample` reprezentuje jeden casovy vzorek.
-- `ActivityStatsCalculator` obsahuje testovatelnou logiku pro souhrny, delku a popis intenzity.
-- `IntensityGraphView` kresli jednoduchy graf intenzity bez externi knihovny.
+- `MainActivity` zobrazuje historii měření a spouští samostatnou obrazovku měření.
+- `TrackingActivity` běží po dobu aktivity, čte senzory a GPS, ukládá vzorky a zobrazuje notifikaci.
+- `MeasurementDetailActivity` zobrazuje detail jednoho měření, přepínatelný graf a export CSV.
+- `MeasurementAdapter` převádí záznamy z databáze na řádky v `ListView` a předává požadavek na smazání.
+- `ActivityDatabase` ukládá měření a vzorky do SQLite přes `SQLiteOpenHelper`.
+- `ActivityRecord` reprezentuje souhrn měření.
+- `ActivitySample` reprezentuje jeden časový vzorek.
+- `ActivityStatsCalculator` obsahuje testovatelnou logiku pro souhrny, délku a popis intenzity.
+- `IntensityGraphView` kreslí jednoduchý graf intenzity bez externí knihovny.
 
-## Datovy model
+## Datový model
 
 Tabulka `measurements`:
 
-- `id` - primarni klic,
-- `started_at` - cas zahajeni v milisekundach,
-- `ended_at` - cas ukonceni v milisekundach, muze byt prazdny,
-- `total_steps` - soucet ulozenych kroku,
-- `distance_meters` - soucet GPS vzdalenosti v metrech,
-- `average_intensity` - prumerna intenzita ze vzorku,
-- `sample_count` - pocet ulozenych vzorku.
+- `id` - primární klíč,
+- `started_at` - čas zahájení v milisekundách,
+- `ended_at` - čas ukončení v milisekundách, může být prázdný,
+- `total_steps` - součet uložených kroků,
+- `distance_meters` - součet GPS vzdálenosti v metrech,
+- `average_intensity` - průměrná intenzita ze vzorků,
+- `sample_count` - počet uložených vzorků.
 
 Tabulka `samples`:
 
-- `id` - primarni klic,
-- `measurement_id` - odkaz na mereni,
-- `measured_at` - cas vzorku v milisekundach,
-- `steps` - prirustek kroku od posledniho vzorku,
-- `intensity` - orientacni intenzita za interval.
-- `latitude` - posledni znama sirka pri ulozeni vzorku,
-- `longitude` - posledni znama delka pri ulozeni vzorku,
-- `distance_meters` - prirustek GPS vzdalenosti od minuleho vzorku.
+- `id` - primární klíč,
+- `measurement_id` - odkaz na měření,
+- `measured_at` - čas vzorku v milisekundách,
+- `steps` - přírůstek kroků od posledního vzorku,
+- `intensity` - orientační intenzita za interval,
+- `latitude` - poslední známá šířka při uložení vzorku,
+- `longitude` - poslední známá délka při uložení vzorku,
+- `distance_meters` - přírůstek GPS vzdálenosti od minulého vzorku,
 - `speed_kmh` - rychlost vzorku v kilometrech za hodinu,
-- `pace_seconds_per_km` - tempo vzorku v sekundach na kilometr.
+- `pace_seconds_per_km` - tempo vzorku v sekundách na kilometr.
 
-Po kazdem vlozeni vzorku se aktualizuje souhrn v tabulce `measurements`.
+Po každém vložení vzorku se aktualizuje souhrn v tabulce `measurements`.
 
 ## Senzory
 
-Aplikace preferuje `Sensor.TYPE_STEP_COUNTER`, pokud je dostupny a aplikace ma opravneni `ACTIVITY_RECOGNITION`. Intenzita se meri z `TYPE_LINEAR_ACCELERATION`, pripadne z `TYPE_ACCELEROMETER`.
+Aplikace preferuje `Sensor.TYPE_STEP_COUNTER`, pokud je dostupný a aplikace má oprávnění `ACTIVITY_RECOGNITION`. Intenzita se měří z `TYPE_LINEAR_ACCELERATION`, případně z `TYPE_ACCELEROMETER`.
 
-Pokud krokomer neni dostupny, aplikace odhaduje kroky z vyraznych pohybovych spic. Tento odhad je orientacni, ale splnuje pozadavek na relevantni pohybova data ze senzoru.
+Pokud krokoměr není dostupný, aplikace odhaduje kroky z výrazných pohybových špiček. Tento odhad je orientační, ale splňuje požadavek na relevantní pohybová data ze senzoru.
 
-## GPS vzdalenost
+## GPS vzdálenost
 
-`TrackingActivity` pouziva `LocationManager` s providery `GPS_PROVIDER` a `NETWORK_PROVIDER`. Pri prvni pouzitelne poloze se ulozi referencni bod. Kazda dalsi poloha s presnosti do 50 metru prida vzdalenost od predchozi polohy, pokud prirustek neni nerealisticky velky. Pritom se prubezne aktualizuje celkova vzdalenost na obrazovce i v notifikaci.
+`TrackingActivity` používá `LocationManager` s providery `GPS_PROVIDER` a `NETWORK_PROVIDER`. Při první použitelné poloze se uloží referenční bod. Každá další poloha s přesností do 50 metrů přidá vzdálenost od předchozí polohy, pokud přírůstek není nerealisticky velký. Přitom se průběžně aktualizuje celková vzdálenost na obrazovce i v notifikaci.
 
-Pri ulozeni vzorku se do SQLite ulozi prirustek vzdalenosti od minuleho vzorku a posledni znama poloha. Pokud poloha neni povolena nebo neni k dispozici, aplikace stale uklada kroky a intenzitu, ale vzdalenost zustava 0.
+Při uložení vzorku se do SQLite uloží přírůstek vzdálenosti od minulého vzorku a poslední známá poloha. Pokud poloha není povolená nebo není k dispozici, aplikace stále ukládá kroky a intenzitu, ale vzdálenost zůstává 0.
 
-Rychlost vzorku se pocita z prirustku vzdalenosti a delky intervalu od predchoziho ulozeneho vzorku. Tempo je stejna hodnota prepoctena na sekundy na kilometr.
+Rychlost vzorku se počítá z přírůstku vzdálenosti a délky intervalu od předchozího uloženého vzorku. Tempo je stejná hodnota přepočtená na sekundy na kilometr.
 
-## Persistencni chovani
+## Persistenční chování
 
-Mereni se zalozi v databazi po otevreni `TrackingActivity`. Vzorky se ukladaji pravidelne v intervalu 5 sekund. UI casovac a GPS vzdalenost se aktualizuji nezavisle, aby uzivatel videl plynule bezici cas a aktualni vzdalenost. Pri ukonceni se ulozi posledni vzorek, mereni se oznaci casem konce a znovu se prepocitaji statistiky.
+Měření se založí v databázi po otevření `TrackingActivity`. Vzorky se ukládají pravidelně v intervalu 5 sekund. UI časovač a GPS vzdálenost se aktualizují nezávisle, aby uživatel viděl plynule běžící čas a aktuální vzdálenost. Při ukončení se uloží poslední vzorek, měření se označí časem konce a znovu se přepočítají statistiky.
 
 ## Notifikace
 
-Behem mereni `TrackingActivity` vytvori ongoing notifikaci `Aktivita probiha`. Na Androidu 8 a novejsim se pouziva notification channel `active_measurement`. Notifikace se aktualizuje spolu s casovacem a zrusi se po ukonceni mereni.
+Během měření `TrackingActivity` vytvoří průběžnou notifikaci `Aktivita probiha`. Na Androidu 8 a novějším se používá notification channel `active_measurement`. Notifikace se aktualizuje spolu s časovačem a zruší se po ukončení měření.
 
 ## Export
 
-Export pouziva standardni Android `ACTION_SEND`. CSV se posila jako text v `Intent.EXTRA_TEXT`, takze neni potreba `FileProvider` ani zapis do externiho uloziste. CSV obsahuje souhrn mereni a vzorky vcetne rychlosti, tempa, vzdalenosti a GPS souradnic.
+Export používá standardní Android `ACTION_SEND`. CSV se posílá jako text v `Intent.EXTRA_TEXT`, takže není potřeba `FileProvider` ani zápis do externího úložiště. CSV obsahuje souhrn měření a vzorky včetně rychlosti, tempa, vzdálenosti a GPS souřadnic.
 
-## Mazani historie
+## Mazání historie
 
-Mazani probiha pres `ActivityDatabase.deleteMeasurement()`. Metoda nejprve smaze vzorky z tabulky `samples` a potom souhrn z tabulky `measurements`, aby mazani fungovalo i bez spolehani na SQLite foreign key cascade.
+Mazání probíhá přes `ActivityDatabase.deleteMeasurement()`. Metoda nejprve smaže vzorky z tabulky `samples` a potom souhrn z tabulky `measurements`, aby mazání fungovalo i bez spoléhání na SQLite foreign key cascade.
 
-## Testovani
+## Testování
 
-Unit test `ActivityStatsCalculatorTest` overuje vypocet statistik, format delky aktivity a slovni popis intenzity. Test je bez Android UI zavislosti.
+Unit test `ActivityStatsCalculatorTest` ověřuje výpočet statistik, formát délky aktivity, formát vzdálenosti, rychlost, tempo a slovní popis intenzity. Test je bez Android UI závislostí.
