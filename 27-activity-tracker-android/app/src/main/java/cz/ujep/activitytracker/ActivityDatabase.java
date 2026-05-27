@@ -9,14 +9,23 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * SQLite úložiště pro měření a jejich pravidelné vzorky.
+ */
 public class ActivityDatabase extends SQLiteOpenHelper {
     private static final String DB_NAME = "activity_tracker.db";
     private static final int DB_VERSION = 3;
 
+    /**
+     * Připraví helper nad lokální databází aplikace.
+     */
     public ActivityDatabase(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
     }
 
+    /**
+     * Vytvoří databázové tabulky při prvním spuštění aplikace.
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE measurements (" +
@@ -42,6 +51,9 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         db.execSQL("CREATE INDEX idx_samples_measurement ON samples(measurement_id, measured_at)");
     }
 
+    /**
+     * Doplní nové sloupce při přechodu ze starší verze databáze.
+     */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 2) {
@@ -56,12 +68,18 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Založí nové měření a vrátí jeho databázové id.
+     */
     public long startMeasurement(long startedAt) {
         ContentValues values = new ContentValues();
         values.put("started_at", startedAt);
         return getWritableDatabase().insert("measurements", null, values);
     }
 
+    /**
+     * Uloží jeden časový vzorek a hned přepočítá souhrn měření.
+     */
     public void insertSample(long measurementId, long measuredAt, int steps, double intensity, double latitude, double longitude, double distanceMeters, double speedKmh, double paceSecondsPerKm) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -80,16 +98,25 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         updateSummary(db, measurementId, 0L);
     }
 
+    /**
+     * Smaže měření i všechny jeho vzorky z historie.
+     */
     public void deleteMeasurement(long measurementId) {
         SQLiteDatabase db = getWritableDatabase();
         db.delete("samples", "measurement_id = ?", new String[]{String.valueOf(measurementId)});
         db.delete("measurements", "id = ?", new String[]{String.valueOf(measurementId)});
     }
 
+    /**
+     * Ukončí měření uložením času konce a finálním přepočtem souhrnu.
+     */
     public void finishMeasurement(long measurementId, long endedAt) {
         updateSummary(getWritableDatabase(), measurementId, endedAt);
     }
 
+    /**
+     * Vrátí všechna měření seřazená od nejnovějšího.
+     */
     public List<ActivityRecord> listMeasurements() {
         Cursor cursor = getReadableDatabase().query(
                 "measurements",
@@ -111,6 +138,9 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Načte jedno konkrétní měření podle id.
+     */
     public ActivityRecord getMeasurement(long id) {
         Cursor cursor = getReadableDatabase().query(
                 "measurements",
@@ -131,6 +161,9 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Vrátí všechny vzorky zadaného měření v časovém pořadí.
+     */
     public List<ActivitySample> listSamples(long measurementId) {
         Cursor cursor = getReadableDatabase().query(
                 "samples",
@@ -163,6 +196,9 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Přepočítá souhrnné hodnoty měření ze vzorků.
+     */
     private void updateSummary(SQLiteDatabase db, long measurementId, long endedAt) {
         Cursor cursor = db.rawQuery(
                 "SELECT COALESCE(SUM(steps), 0), COALESCE(SUM(distance_meters), 0), COALESCE(AVG(intensity), 0), COUNT(*) FROM samples WHERE measurement_id = ?",
@@ -185,6 +221,9 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         }
     }
 
+    /**
+     * Převede aktuální řádek kurzoru na objekt ActivityRecord.
+     */
     private ActivityRecord readRecord(Cursor cursor) {
         int endedColumn = cursor.getColumnIndexOrThrow("ended_at");
         long endedAt = cursor.isNull(endedColumn) ? 0L : cursor.getLong(endedColumn);
@@ -199,6 +238,9 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         );
     }
 
+    /**
+     * Bezpečně načte nullable desetinné číslo z kurzoru.
+     */
     private double readNullableDouble(Cursor cursor, String column, double fallback) {
         int index = cursor.getColumnIndexOrThrow(column);
         return cursor.isNull(index) ? fallback : cursor.getDouble(index);

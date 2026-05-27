@@ -1,5 +1,8 @@
 package cz.ujep.activitytracker;
 
+/**
+ * Souhrnný záznam jednoho měření aktivity uložený v tabulce measurements.
+ */
 public class ActivityRecord {
     public final long id;
     public final long startedAt;
@@ -9,6 +12,9 @@ public class ActivityRecord {
     public final double averageIntensity;
     public final int sampleCount;
 
+    /**
+     * Vytvoří neměnný objekt se souhrnem měření načteným z databáze.
+     */
     public ActivityRecord(long id, long startedAt, long endedAt, int totalSteps, double distanceMeters, double averageIntensity, int sampleCount) {
         this.id = id;
         this.startedAt = startedAt;
@@ -19,10 +25,16 @@ public class ActivityRecord {
         this.sampleCount = sampleCount;
     }
 
+    /**
+     * Vrací true, pokud už má měření uložený čas ukončení.
+     */
     public boolean isFinished() {
         return endedAt > 0;
     }
 
+    /**
+     * Vrací čas konce pro výpis; u probíhajícího měření použije aktuální čas.
+     */
     public long getDisplayEndTime() {
         return isFinished() ? endedAt : System.currentTimeMillis();
     }

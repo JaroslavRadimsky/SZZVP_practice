@@ -1,5 +1,8 @@
 package cz.ujep.activitytracker;
 
+/**
+ * Jeden pravidelně uložený vzorek měření aktivity.
+ */
 public class ActivitySample {
     public final long id;
     public final long measurementId;
@@ -12,6 +15,9 @@ public class ActivitySample {
     public final double speedKmh;
     public final double paceSecondsPerKm;
 
+    /**
+     * Vytvoří neměnný objekt s daty vzorku načtenými ze SQLite.
+     */
     public ActivitySample(long id, long measurementId, long measuredAt, int steps, double intensity, double latitude, double longitude, double distanceMeters, double speedKmh, double paceSecondsPerKm) {
         this.id = id;
         this.measurementId = measurementId;

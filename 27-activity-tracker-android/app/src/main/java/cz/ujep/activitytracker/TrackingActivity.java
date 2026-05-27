@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Celoplošná obrazovka probíhajícího měření aktivity.
+ */
 public class TrackingActivity extends Activity implements SensorEventListener, LocationListener {
     private static final int REQUEST_TRACKING_PERMISSIONS = 10;
     private static final int NOTIFICATION_ID = 2701;
@@ -85,7 +88,13 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
     private long lastMovementAt;
     private boolean inactivityNotificationShown;
 
+    /**
+     * Pravidelně ukládá vzorek aktivity do databáze.
+     */
     private final Runnable sampleRunnable = new Runnable() {
+        /**
+         * Uloží vzorek a naplánuje další spuštění po pěti sekundách.
+         */
         @Override
         public void run() {
             if (measuring) {
@@ -95,7 +104,13 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     };
 
+    /**
+     * Každou sekundu aktualizuje časovač, notifikaci a hlídání neaktivity.
+     */
     private final Runnable timerRunnable = new Runnable() {
+        /**
+         * Obnoví živé hodnoty na obrazovce a znovu naplánuje časovač.
+         */
         @Override
         public void run() {
             if (measuring) {
@@ -107,6 +122,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     };
 
+    /**
+     * Připraví UI, senzory, GPS a po získání oprávnění spustí měření.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,6 +153,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         requestTrackingPermissionsIfNeededOrStart();
     }
 
+    /**
+     * Při zavření aktivity bezpečně ukončí běžící měření.
+     */
     @Override
     protected void onDestroy() {
         if (measuring) {
@@ -143,6 +164,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         super.onDestroy();
     }
 
+    /**
+     * Při tlačítku zpět nabídne potvrzení, aby uživatel měření neukončil omylem.
+     */
     @Override
     public void onBackPressed() {
         if (!measuring) {
@@ -157,6 +181,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
                 .show();
     }
 
+    /**
+     * Zpracuje data ze step counteru nebo akcelerometru během měření.
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (!measuring) {
@@ -192,10 +219,16 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Povinný callback senzoru; aplikace přesnost senzoru samostatně neřeší.
+     */
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
     }
 
+    /**
+     * Po odpovědi na žádost o oprávnění pokračuje spuštěním měření.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -204,6 +237,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Zpracuje novou GPS nebo síťovou polohu a přičte realistický posun.
+     */
     @Override
     public void onLocationChanged(Location location) {
         if (!measuring || !isUsableLocation(location)) {
@@ -225,6 +261,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         updateLiveStats();
     }
 
+    /**
+     * Po zapnutí poskytovatele polohy znovu zaregistruje GPS odběr.
+     */
     @Override
     public void onProviderEnabled(String provider) {
         locationTrackingEnabled = canUseLocation();
@@ -232,16 +271,25 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         updateSensorStatus();
     }
 
+    /**
+     * Po vypnutí poskytovatele polohy aktualizuje stav GPS v UI.
+     */
     @Override
     public void onProviderDisabled(String provider) {
         locationTrackingEnabled = canUseLocation();
         updateSensorStatus();
     }
 
+    /**
+     * Starší callback polohy; pro tuto aplikaci není potřeba žádná akce.
+     */
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
+    /**
+     * Vyžádá potřebná runtime oprávnění nebo rovnou spustí měření.
+     */
     private void requestTrackingPermissionsIfNeededOrStart() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             startMeasurement();
@@ -265,6 +313,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         startMeasurement();
     }
 
+    /**
+     * Založí nové měření, vynuluje živé hodnoty a spustí senzory, GPS a časovače.
+     */
     private void startMeasurement() {
         if (measuring) {
             return;
@@ -309,6 +360,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         handler.postDelayed(timerRunnable, TIMER_INTERVAL_MS);
     }
 
+    /**
+     * Ukončí aktivitu z UI a zavře měřicí obrazovku.
+     */
     private void stopMeasurementAndFinish() {
         if (measuring) {
             finishMeasurement();
@@ -316,6 +370,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         finish();
     }
 
+    /**
+     * Uloží poslední vzorek, označí měření jako ukončené a vypne zdroje dat.
+     */
     private void finishMeasurement() {
         if (activeMeasurementId >= 0L) {
             storeSample();
@@ -331,6 +388,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         cancelInactivityNotification();
     }
 
+    /**
+     * Uloží jeden pětisekundový vzorek včetně kroků, intenzity, GPS, rychlosti a tempa.
+     */
     private void storeSample() {
         if (activeMeasurementId < 0L) {
             return;
@@ -363,6 +423,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         intensityEvents = 0;
     }
 
+    /**
+     * Přepíše živé hodnoty na obrazovce měření.
+     */
     private void updateLiveStats() {
         int totalSteps = usingStepCounter ? currentStepTotal : estimatedSteps;
         long duration = System.currentTimeMillis() - startedAt;
@@ -378,6 +441,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Zaregistruje posluchače krokoměru a pohybového senzoru.
+     */
     private void registerSensors() {
         if (usingStepCounter) {
             sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -387,10 +453,16 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Odregistruje všechny senzory používané aktivitou.
+     */
     private void unregisterSensors() {
         sensorManager.unregisterListener(this);
     }
 
+    /**
+     * Zaregistruje GPS a síťové aktualizace polohy, pokud jsou dostupné.
+     */
     private void registerLocationUpdates() {
         if (!locationTrackingEnabled) {
             return;
@@ -418,6 +490,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Odregistruje příjem aktualizací polohy.
+     */
     private void unregisterLocationUpdates() {
         try {
             locationManager.removeUpdates(this);
@@ -425,6 +500,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Vybere nejlepší dostupný pohybový senzor pro intenzitu.
+     */
     private Sensor selectMotionSensor() {
         Sensor linear = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         if (linear != null) {
@@ -433,6 +511,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         return sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
+    /**
+     * Spočítá orientační intenzitu pohybu z hodnot senzoru.
+     */
     private double calculateMotionIntensity(SensorEvent event) {
         double x = event.values[0];
         double y = event.values[1];
@@ -444,6 +525,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         return Math.min(10.0, magnitude);
     }
 
+    /**
+     * Ověří, zda lze použít hardwarový krokoměr.
+     */
     private boolean canUseStepCounter() {
         if (stepSensor == null) {
             return false;
@@ -454,6 +538,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         return true;
     }
 
+    /**
+     * Ověří, zda má aplikace oprávnění a dostupný provider pro polohu.
+     */
     private boolean canUseLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -464,6 +551,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
                 || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
     }
 
+    /**
+     * Zobrazí textový stav používaných senzorů a GPS na obrazovce.
+     */
     private void updateSensorStatus() {
         String gpsText = locationTrackingEnabled
                 ? " GPS vzdalenost je aktivni."
@@ -477,6 +567,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Filtruje nepřesné polohy, aby nevznikaly nesmyslné skoky vzdálenosti.
+     */
     private boolean isUsableLocation(Location location) {
         if (location == null) {
             return false;
@@ -484,9 +577,12 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         return !location.hasAccuracy() || location.getAccuracy() <= MAX_ACCEPTED_ACCURACY_M;
     }
 
+    /**
+     * Vytvoří notification channels pro průběžné měření a upozornění na neaktivitu.
+     */
     private void createNotificationChannelIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        NotificationChannel channel = new NotificationChannel(
+            NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
                     "Probihajici aktivita",
                     NotificationManager.IMPORTANCE_LOW
@@ -504,6 +600,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Vytvoří nebo aktualizuje trvalou notifikaci probíhající aktivity.
+     */
     private void showOrUpdateNotification() {
         if (!measuring) {
             return;
@@ -547,6 +646,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
+    /**
+     * Zkontroluje, zda uživatel není déle než 30 sekund bez pohybu.
+     */
     private void checkInactivityNotification() {
         if (!measuring || inactivityNotificationShown) {
             return;
@@ -557,6 +659,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Zobrazí upozornění, že se uživatel dlouho nehýbe.
+     */
     private void showInactivityNotification() {
         Intent intent = new Intent(this, TrackingActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -587,6 +692,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         notificationManager.notify(INACTIVITY_NOTIFICATION_ID, notification);
     }
 
+    /**
+     * Označí, že byl detekován pohyb, a zruší případné upozornění neaktivity.
+     */
     private void markMovement() {
         lastMovementAt = System.currentTimeMillis();
         if (inactivityNotificationShown) {
@@ -594,10 +702,16 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         }
     }
 
+    /**
+     * Zruší trvalou notifikaci probíhající aktivity.
+     */
     private void cancelNotification() {
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
+    /**
+     * Zruší upozornění na neaktivitu a dovolí jeho pozdější opětovné zobrazení.
+     */
     private void cancelInactivityNotification() {
         inactivityNotificationShown = false;
         notificationManager.cancel(INACTIVITY_NOTIFICATION_ID);

@@ -12,8 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Adapter pro zobrazení uložených měření v ListView.
+ */
 public class MeasurementAdapter extends BaseAdapter {
+    /**
+     * Callback pro tlačítko smazání na řádku měření.
+     */
     public interface DeleteClickListener {
+        /**
+         * Předá aktivitu, kterou chce uživatel smazat.
+         */
         void onDeleteClick(ActivityRecord record);
     }
 
@@ -21,32 +30,50 @@ public class MeasurementAdapter extends BaseAdapter {
     private final List<ActivityRecord> records = new ArrayList<>();
     private final DeleteClickListener deleteClickListener;
 
+    /**
+     * Připraví adapter a uloží callback pro mazání měření.
+     */
     public MeasurementAdapter(Context context, DeleteClickListener deleteClickListener) {
         this.inflater = LayoutInflater.from(context);
         this.deleteClickListener = deleteClickListener;
     }
 
+    /**
+     * Nahradí aktuální data novým seznamem měření.
+     */
     public void setRecords(List<ActivityRecord> newRecords) {
         records.clear();
         records.addAll(newRecords);
         notifyDataSetChanged();
     }
 
+    /**
+     * Vrací počet řádků v seznamu.
+     */
     @Override
     public int getCount() {
         return records.size();
     }
 
+    /**
+     * Vrací měření na dané pozici.
+     */
     @Override
     public ActivityRecord getItem(int position) {
         return records.get(position);
     }
 
+    /**
+     * Vrací stabilní id řádku podle id měření v databázi.
+     */
     @Override
     public long getItemId(int position) {
         return records.get(position).id;
     }
 
+    /**
+     * Vytvoří nebo znovu použije řádek seznamu a vyplní ho daty měření.
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;

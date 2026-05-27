@@ -11,6 +11,9 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Vlastní View pro vykreslení průběhu vybrané metriky aktivity.
+ */
 public class IntensityGraphView extends View {
     public static final int METRIC_INTENSITY = 0;
     public static final int METRIC_SPEED = 1;
@@ -24,32 +27,50 @@ public class IntensityGraphView extends View {
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private int metric = METRIC_INTENSITY;
 
+    /**
+     * Konstruktor používaný při vytvoření grafu z kódu.
+     */
     public IntensityGraphView(Context context) {
         super(context);
         init();
     }
 
+    /**
+     * Konstruktor používaný při vytvoření grafu z XML layoutu.
+     */
     public IntensityGraphView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
+    /**
+     * Konstruktor používaný při vytvoření grafu z XML se stylem.
+     */
     public IntensityGraphView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
 
+    /**
+     * Nastaví vzorky, ze kterých se bude graf kreslit.
+     */
     public void setSamples(List<ActivitySample> newSamples) {
         samples.clear();
         samples.addAll(newSamples);
         invalidate();
     }
 
+    /**
+     * Přepne metriku grafu na intenzitu, rychlost, tempo nebo vzdálenost.
+     */
     public void setMetric(int metric) {
         this.metric = metric;
         invalidate();
     }
 
+    /**
+     * Nastaví barvy, tloušťky čar a text pro vykreslování grafu.
+     */
     private void init() {
         backgroundPaint.setColor(Color.rgb(248, 250, 249));
         axisPaint.setColor(Color.rgb(170, 178, 172));
@@ -61,6 +82,9 @@ public class IntensityGraphView extends View {
         textPaint.setTextSize(30f);
     }
 
+    /**
+     * Vykreslí osy, prázdný stav a samotnou lomenou čáru grafu.
+     */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -115,11 +139,17 @@ public class IntensityGraphView extends View {
         canvas.drawPath(path, linePaint);
     }
 
+    /**
+     * Přepočítá hodnotu metriky na souřadnici Y v grafu.
+     */
     private float yFor(double intensity, double maxIntensity, int height, int padding) {
         double ratio = Math.max(0.0, Math.min(1.0, intensity / maxIntensity));
         return (float) (height - padding - ratio * (height - 2.0 * padding));
     }
 
+    /**
+     * Vybere hodnotu aktuální metriky ze vzorku.
+     */
     private double valueFor(ActivitySample sample, double cumulativeDistance) {
         if (metric == METRIC_SPEED) {
             return sample.speedKmh;

@@ -7,7 +7,13 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+/**
+ * Unit testy čisté výpočetní logiky bez závislosti na Android UI.
+ */
 public class ActivityStatsCalculatorTest {
+    /**
+     * Ověřuje součet kroků, vzdálenosti, intenzity, délky a počtu vzorků.
+     */
     @Test
     public void summarizesSamples() {
         List<ActivitySample> samples = Arrays.asList(
@@ -25,11 +31,17 @@ public class ActivityStatsCalculatorTest {
         assertEquals(3, stats.sampleCount);
     }
 
+    /**
+     * Ověřuje převod milisekund na formát HH:mm:ss.
+     */
     @Test
     public void formatsDurationAsClock() {
         assertEquals("01:02:03", ActivityStatsCalculator.formatDuration(3723000L));
     }
 
+    /**
+     * Ověřuje slovní zařazení intenzity pohybu.
+     */
     @Test
     public void labelsIntensity() {
         assertEquals("Klidova", ActivityStatsCalculator.intensityLabel(0.2));
@@ -38,12 +50,18 @@ public class ActivityStatsCalculatorTest {
         assertEquals("Vysoka", ActivityStatsCalculator.intensityLabel(5.0));
     }
 
+    /**
+     * Ověřuje formátování vzdálenosti v metrech a kilometrech.
+     */
     @Test
     public void formatsDistance() {
         assertEquals("950 m", ActivityStatsCalculator.formatDistance(950.0));
         assertEquals("1.25 km", ActivityStatsCalculator.formatDistance(1250.0));
     }
 
+    /**
+     * Ověřuje výpočet i formát rychlosti a tempa.
+     */
     @Test
     public void calculatesSpeedAndPace() {
         assertEquals(7.2, ActivityStatsCalculator.calculateSpeedKmh(10.0, 5000L), 0.001);

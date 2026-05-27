@@ -13,12 +13,18 @@ import android.widget.TextView;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Obrazovka detailu jednoho měření se souhrnem, grafem a CSV exportem.
+ */
 public class MeasurementDetailActivity extends Activity {
     private ActivityRecord record;
     private List<ActivitySample> samples;
     private IntensityGraphView graphView;
     private TextView graphStatsText;
 
+    /**
+     * Načte měření podle id z intentu a připraví souhrn, graf a export.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,10 +50,16 @@ public class MeasurementDetailActivity extends Activity {
         exportButton.setOnClickListener(view -> shareCsv());
     }
 
+    /**
+     * Sestaví titulek detailu podle času začátku měření.
+     */
     private String buildTitle() {
         return "Mereni " + DateFormat.format("dd.MM.yyyy HH:mm", record.startedAt);
     }
 
+    /**
+     * Sestaví textový souhrn základních statistik měření.
+     */
     private String buildSummary() {
         long end = record.getDisplayEndTime();
         String startText = DateFormat.format("dd.MM.yyyy HH:mm:ss", record.startedAt).toString();
@@ -72,6 +84,9 @@ public class MeasurementDetailActivity extends Activity {
         );
     }
 
+    /**
+     * Připraví rozbalovací výběr metriky pro graf.
+     */
     private void setupMetricSpinner() {
         String[] labels = new String[]{"Intenzita", "Rychlost", "Tempo", "Vzdalenost"};
         Spinner spinner = findViewById(R.id.graphMetricSpinner);
@@ -79,12 +94,18 @@ public class MeasurementDetailActivity extends Activity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            /**
+             * Po výběru metriky překreslí graf a aktualizuje text pod grafem.
+             */
             @Override
             public void onItemSelected(AdapterView<?> parent, android.view.View view, int position, long id) {
                 graphView.setMetric(position);
                 graphStatsText.setText(buildGraphStats(position));
             }
 
+            /**
+             * Povinný callback Spinneru; aplikace žádnou speciální akci nepotřebuje.
+             */
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -93,6 +114,9 @@ public class MeasurementDetailActivity extends Activity {
         graphStatsText.setText(buildGraphStats(IntensityGraphView.METRIC_INTENSITY));
     }
 
+    /**
+     * Vypočítá doprovodný text ke grafu pro vybranou metriku.
+     */
     private String buildGraphStats(int metric) {
         if (samples.isEmpty()) {
             return "Graf nema ulozena data.";
@@ -125,6 +149,9 @@ public class MeasurementDetailActivity extends Activity {
         return "Maximum: " + ActivityStatsCalculator.formatIntensity(max) + " | prumer vzorku: " + ActivityStatsCalculator.formatIntensity(average);
     }
 
+    /**
+     * Vrátí hodnotu vzorku odpovídající vybrané metrice grafu.
+     */
     private double graphValue(ActivitySample sample, int metric, double cumulativeDistance) {
         if (metric == IntensityGraphView.METRIC_SPEED) {
             return sample.speedKmh;
@@ -138,6 +165,9 @@ public class MeasurementDetailActivity extends Activity {
         return sample.intensity;
     }
 
+    /**
+     * Otevře systémové sdílení a předá do něj CSV text.
+     */
     private void shareCsv() {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/csv");
@@ -146,6 +176,9 @@ public class MeasurementDetailActivity extends Activity {
         startActivity(Intent.createChooser(intent, "Sdilet CSV"));
     }
 
+    /**
+     * Sestaví CSV export se souhrnem a všemi vzorky měření.
+     */
     private String buildCsv() {
         StringBuilder builder = new StringBuilder();
         builder.append("measurement_id;started_at;ended_at;duration;total_steps;distance_meters;average_speed_kmh;average_pace;average_intensity\n");
