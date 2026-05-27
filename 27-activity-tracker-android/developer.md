@@ -47,6 +47,29 @@ Aplikace preferuje `Sensor.TYPE_STEP_COUNTER`, pokud je dostupný a aplikace má
 
 Pokud krokoměr není dostupný, aplikace odhaduje kroky z výrazných pohybových špiček. Tento odhad je orientační, ale splňuje požadavek na relevantní pohybová data ze senzoru.
 
+## Výpočet intenzity pohybu
+
+Orientační intenzita se počítá v metodě `TrackingActivity.calculateMotionIntensity()`. Aplikace vezme hodnoty pohybového senzoru ve třech osách `x`, `y`, `z` a spočítá velikost výsledného vektoru zrychlení:
+
+```text
+intenzita = sqrt(x^2 + y^2 + z^2)
+```
+
+Pokud je k dispozici senzor `TYPE_LINEAR_ACCELERATION`, používá se přímo, protože už neobsahuje zemskou gravitaci. Pokud zařízení poskytuje jen běžný `TYPE_ACCELEROMETER`, jeho hodnota gravitaci obsahuje, proto se od výsledné velikosti odečítá přibližná zemská gravitace `SensorManager.GRAVITY_EARTH`:
+
+```text
+intenzita = abs(sqrt(x^2 + y^2 + z^2) - 9.81)
+```
+
+Výsledná hodnota se omezí na maximum `10.0`, aby ojedinělý prudký pohyb telefonu nerozhodil graf a průměry. Slovní úrovně se převádějí v `ActivityStatsCalculator.intensityLabel()`:
+
+- méně než `0.8` - klidová,
+- `0.8` až `2.0` - lehká,
+- `2.0` až `4.0` - střední,
+- `4.0` a více - vysoká.
+
+Tato metoda byla zvolena proto, že je jednoduchá, dostupná na běžných telefonech a funguje i bez GPS nebo specializovaných sportovních API. Pro zadání stačí orientační intenzita pohybu, nikoli přesná fyziologická metrika. Výpočet z velikosti zrychlení navíc nezávisí na tom, jak je telefon otočený v kapse nebo v ruce, protože slučuje všechny tři osy do jedné hodnoty.
+
 ## GPS vzdálenost
 
 `TrackingActivity` používá `LocationManager` s providery `GPS_PROVIDER` a `NETWORK_PROVIDER`. Při první použitelné poloze se uloží referenční bod. Každá další poloha s přesností do 50 metrů přidá vzdálenost od předchozí polohy, pokud přírůstek není nerealisticky velký. Přitom se průběžně aktualizuje celková vzdálenost na obrazovce i v notifikaci.
