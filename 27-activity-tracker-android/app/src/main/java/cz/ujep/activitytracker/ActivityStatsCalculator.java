@@ -53,4 +53,33 @@ public class ActivityStatsCalculator {
         }
         return String.format(Locale.US, "%.0f m", Math.max(0.0, meters));
     }
+
+    public static double calculateSpeedKmh(double distanceMeters, long durationMillis) {
+        if (distanceMeters <= 0.0 || durationMillis <= 0L) {
+            return 0.0;
+        }
+        double hours = durationMillis / 3600000.0;
+        return (distanceMeters / 1000.0) / hours;
+    }
+
+    public static double calculatePaceSecondsPerKm(double distanceMeters, long durationMillis) {
+        if (distanceMeters <= 0.0 || durationMillis <= 0L) {
+            return 0.0;
+        }
+        return (durationMillis / 1000.0) / (distanceMeters / 1000.0);
+    }
+
+    public static String formatSpeed(double speedKmh) {
+        return String.format(Locale.US, "%.1f km/h", Math.max(0.0, speedKmh));
+    }
+
+    public static String formatPace(double secondsPerKm) {
+        if (secondsPerKm <= 0.0) {
+            return "--/km";
+        }
+        long roundedSeconds = Math.round(secondsPerKm);
+        long minutes = roundedSeconds / 60L;
+        long seconds = roundedSeconds % 60L;
+        return String.format(Locale.US, "%d:%02d/km", minutes, seconds);
+    }
 }

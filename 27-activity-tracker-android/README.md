@@ -11,16 +11,19 @@ Jednoducha Android aplikace v Jave pro zaznam fyzicke aktivity behem dne. Projek
 - Cas mereni se na obrazovce aktualizuje kazdou sekundu.
 - Ukladani casu vzorku, kroku nebo odhadu kroku a orientacni intenzity pohybu.
 - Sledovani urazene vzdalenosti pomoci GPS a ulozeni poslednich souradnic vzorku.
+- Vypocet rychlosti v km/h a tempa ve formatu minuty:sekundy na kilometr pro kazdy vzorek.
 - Ongoing notifikace v systemove liste po celou dobu probihajici aktivity.
 - Persistentni ulozeni dat do lokalni SQLite databaze.
 - Seznam ulozenych mereni.
+- Mazani mereni z historie.
 - Detail mereni se statistikami:
   - delka aktivity,
   - prumerna intenzita,
   - celkovy pocet kroku,
   - urazena vzdalenost,
+  - prumerna rychlost a tempo,
   - pocet ulozenych vzorku.
-- Jednoduchy graf intenzity aktivity.
+- Prepinatelny graf intenzity, rychlosti, tempa a vzdalenosti.
 - Sdileni namerenych dat jako CSV text.
 - Fallback: pokud zarizeni nema krokomer nebo chybi opravneni, aplikace odhaduje kroky z pohyboveho senzoru.
 

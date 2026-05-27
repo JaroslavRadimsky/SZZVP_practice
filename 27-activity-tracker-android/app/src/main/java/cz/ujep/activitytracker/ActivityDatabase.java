@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ActivityDatabase extends SQLiteOpenHelper {
     private static final String DB_NAME = "activity_tracker.db";
-    private static final int DB_VERSION = 2;
+    private static final int DB_VERSION = 3;
 
     public ActivityDatabase(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -36,6 +36,8 @@ public class ActivityDatabase extends SQLiteOpenHelper {
                 "latitude REAL," +
                 "longitude REAL," +
                 "distance_meters REAL NOT NULL DEFAULT 0," +
+                "speed_kmh REAL NOT NULL DEFAULT 0," +
+                "pace_seconds_per_km REAL NOT NULL DEFAULT 0," +
                 "FOREIGN KEY(measurement_id) REFERENCES measurements(id) ON DELETE CASCADE)");
         db.execSQL("CREATE INDEX idx_samples_measurement ON samples(measurement_id, measured_at)");
     }
@@ -48,6 +50,10 @@ public class ActivityDatabase extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE samples ADD COLUMN longitude REAL");
             db.execSQL("ALTER TABLE samples ADD COLUMN distance_meters REAL NOT NULL DEFAULT 0");
         }
+        if (oldVersion < 3) {
+            db.execSQL("ALTER TABLE samples ADD COLUMN speed_kmh REAL NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE samples ADD COLUMN pace_seconds_per_km REAL NOT NULL DEFAULT 0");
+        }
     }
 
     public long startMeasurement(long startedAt) {
@@ -56,7 +62,7 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         return getWritableDatabase().insert("measurements", null, values);
     }
 
-    public void insertSample(long measurementId, long measuredAt, int steps, double intensity, double latitude, double longitude, double distanceMeters) {
+    public void insertSample(long measurementId, long measuredAt, int steps, double intensity, double latitude, double longitude, double distanceMeters, double speedKmh, double paceSecondsPerKm) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("measurement_id", measurementId);
@@ -68,8 +74,16 @@ public class ActivityDatabase extends SQLiteOpenHelper {
             values.put("longitude", longitude);
         }
         values.put("distance_meters", Math.max(0.0, distanceMeters));
+        values.put("speed_kmh", Math.max(0.0, speedKmh));
+        values.put("pace_seconds_per_km", Math.max(0.0, paceSecondsPerKm));
         db.insert("samples", null, values);
         updateSummary(db, measurementId, 0L);
+    }
+
+    public void deleteMeasurement(long measurementId) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete("samples", "measurement_id = ?", new String[]{String.valueOf(measurementId)});
+        db.delete("measurements", "id = ?", new String[]{String.valueOf(measurementId)});
     }
 
     public void finishMeasurement(long measurementId, long endedAt) {
@@ -138,7 +152,9 @@ public class ActivityDatabase extends SQLiteOpenHelper {
                         cursor.getDouble(cursor.getColumnIndexOrThrow("intensity")),
                         readNullableDouble(cursor, "latitude", Double.NaN),
                         readNullableDouble(cursor, "longitude", Double.NaN),
-                        cursor.getDouble(cursor.getColumnIndexOrThrow("distance_meters"))
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("distance_meters")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("speed_kmh")),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("pace_seconds_per_km"))
                 ));
             }
             return samples;

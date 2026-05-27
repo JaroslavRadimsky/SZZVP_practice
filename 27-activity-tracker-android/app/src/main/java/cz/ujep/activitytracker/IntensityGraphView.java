@@ -12,11 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IntensityGraphView extends View {
+    public static final int METRIC_INTENSITY = 0;
+    public static final int METRIC_SPEED = 1;
+    public static final int METRIC_PACE = 2;
+    public static final int METRIC_DISTANCE = 3;
+
     private final List<ActivitySample> samples = new ArrayList<>();
     private final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint axisPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private int metric = METRIC_INTENSITY;
 
     public IntensityGraphView(Context context) {
         super(context);
@@ -36,6 +42,11 @@ public class IntensityGraphView extends View {
     public void setSamples(List<ActivitySample> newSamples) {
         samples.clear();
         samples.addAll(newSamples);
+        invalidate();
+    }
+
+    public void setMetric(int metric) {
+        this.metric = metric;
         invalidate();
     }
 
@@ -67,24 +78,34 @@ public class IntensityGraphView extends View {
             return;
         }
 
-        double maxIntensity = 1.0;
+        double maxValue = 0.0;
+        double cumulativeDistance = 0.0;
         for (ActivitySample sample : samples) {
-            if (sample.intensity > maxIntensity) {
-                maxIntensity = sample.intensity;
+            cumulativeDistance += sample.distanceMeters;
+            double value = valueFor(sample, cumulativeDistance);
+            if (value > maxValue) {
+                maxValue = value;
             }
+        }
+        if (maxValue <= 0.0) {
+            canvas.drawText("Bez dat pro vybranou metriku", padding + 12, height / 2f, textPaint);
+            return;
         }
 
         if (samples.size() == 1) {
             float x = width / 2f;
-            float y = yFor(samples.get(0).intensity, maxIntensity, height, padding);
+            float y = yFor(valueFor(samples.get(0), samples.get(0).distanceMeters), maxValue, height, padding);
             canvas.drawCircle(x, y, 7f, linePaint);
             return;
         }
 
         Path path = new Path();
+        cumulativeDistance = 0.0;
         for (int i = 0; i < samples.size(); i++) {
+            ActivitySample sample = samples.get(i);
+            cumulativeDistance += sample.distanceMeters;
             float x = padding + (width - 2f * padding) * i / (samples.size() - 1f);
-            float y = yFor(samples.get(i).intensity, maxIntensity, height, padding);
+            float y = yFor(valueFor(sample, cumulativeDistance), maxValue, height, padding);
             if (i == 0) {
                 path.moveTo(x, y);
             } else {
@@ -97,5 +118,18 @@ public class IntensityGraphView extends View {
     private float yFor(double intensity, double maxIntensity, int height, int padding) {
         double ratio = Math.max(0.0, Math.min(1.0, intensity / maxIntensity));
         return (float) (height - padding - ratio * (height - 2.0 * padding));
+    }
+
+    private double valueFor(ActivitySample sample, double cumulativeDistance) {
+        if (metric == METRIC_SPEED) {
+            return sample.speedKmh;
+        }
+        if (metric == METRIC_PACE) {
+            return sample.paceSecondsPerKm;
+        }
+        if (metric == METRIC_DISTANCE) {
+            return cumulativeDistance;
+        }
+        return sample.intensity;
     }
 }

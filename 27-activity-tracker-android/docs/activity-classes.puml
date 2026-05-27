@@ -35,8 +35,9 @@ class MeasurementAdapter {
 
 class ActivityDatabase {
   + startMeasurement(long): long
-  + insertSample(long, long, int, double, double, double, double)
+  + insertSample(long, long, int, double, double, double, double, double, double)
   + finishMeasurement(long, long)
+  + deleteMeasurement(long)
   + listMeasurements(): List<ActivityRecord>
   + getMeasurement(long): ActivityRecord
   + listSamples(long): List<ActivitySample>
@@ -58,6 +59,8 @@ class ActivitySample {
   + double latitude
   + double longitude
   + double distanceMeters
+  + double speedKmh
+  + double paceSecondsPerKm
 }
 
 class ActivityStatsCalculator {
@@ -72,6 +75,7 @@ class IntensityGraphView {
 
 MainActivity --> MeasurementAdapter
 MainActivity --> TrackingActivity
+MainActivity --> ActivityDatabase
 MeasurementAdapter --> ActivityRecord
 TrackingActivity --> ActivityDatabase
 MeasurementDetailActivity --> ActivityDatabase

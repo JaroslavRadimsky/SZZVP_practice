@@ -13,11 +13,17 @@ import java.util.List;
 import java.util.Locale;
 
 public class MeasurementAdapter extends BaseAdapter {
+    public interface DeleteClickListener {
+        void onDeleteClick(ActivityRecord record);
+    }
+
     private final LayoutInflater inflater;
     private final List<ActivityRecord> records = new ArrayList<>();
+    private final DeleteClickListener deleteClickListener;
 
-    public MeasurementAdapter(Context context) {
+    public MeasurementAdapter(Context context, DeleteClickListener deleteClickListener) {
         this.inflater = LayoutInflater.from(context);
+        this.deleteClickListener = deleteClickListener;
     }
 
     public void setRecords(List<ActivityRecord> newRecords) {
@@ -51,6 +57,7 @@ public class MeasurementAdapter extends BaseAdapter {
         ActivityRecord record = getItem(position);
         TextView title = row.findViewById(R.id.rowTitleText);
         TextView subtitle = row.findViewById(R.id.rowSubtitleText);
+        row.findViewById(R.id.deleteButton).setOnClickListener(view -> deleteClickListener.onDeleteClick(record));
 
         String start = DateFormat.format("dd.MM.yyyy HH:mm", record.startedAt).toString();
         String end = record.isFinished()

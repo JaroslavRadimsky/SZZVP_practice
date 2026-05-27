@@ -6,8 +6,8 @@ Aplikace navazuje na jednoduche vrstveni z projektu `05-rss-reader-android`:
 
 - `MainActivity` zobrazuje historii mereni a spousti samostatnou obrazovku mereni.
 - `TrackingActivity` bezi po dobu aktivity, cte senzory a GPS, uklada vzorky a zobrazuje notifikaci.
-- `MeasurementDetailActivity` zobrazuje detail jednoho mereni, graf a export CSV.
-- `MeasurementAdapter` prevadi zaznamy z databaze na radky v `ListView`.
+- `MeasurementDetailActivity` zobrazuje detail jednoho mereni, prepinatelny graf a export CSV.
+- `MeasurementAdapter` prevadi zaznamy z databaze na radky v `ListView` a predava pozadavek na smazani.
 - `ActivityDatabase` uklada mereni a vzorky do SQLite pres `SQLiteOpenHelper`.
 - `ActivityRecord` reprezentuje souhrn mereni.
 - `ActivitySample` reprezentuje jeden casovy vzorek.
@@ -36,6 +36,8 @@ Tabulka `samples`:
 - `latitude` - posledni znama sirka pri ulozeni vzorku,
 - `longitude` - posledni znama delka pri ulozeni vzorku,
 - `distance_meters` - prirustek GPS vzdalenosti od minuleho vzorku.
+- `speed_kmh` - rychlost vzorku v kilometrech za hodinu,
+- `pace_seconds_per_km` - tempo vzorku v sekundach na kilometr.
 
 Po kazdem vlozeni vzorku se aktualizuje souhrn v tabulce `measurements`.
 
@@ -51,6 +53,8 @@ Pokud krokomer neni dostupny, aplikace odhaduje kroky z vyraznych pohybovych spi
 
 Pri ulozeni vzorku se do SQLite ulozi prirustek vzdalenosti od minuleho vzorku a posledni znama poloha. Pokud poloha neni povolena nebo neni k dispozici, aplikace stale uklada kroky a intenzitu, ale vzdalenost zustava 0.
 
+Rychlost vzorku se pocita z prirustku vzdalenosti a delky intervalu od predchoziho ulozeneho vzorku. Tempo je stejna hodnota prepoctena na sekundy na kilometr.
+
 ## Persistencni chovani
 
 Mereni se zalozi v databazi po otevreni `TrackingActivity`. Vzorky se ukladaji pravidelne v intervalu 5 sekund. UI casovac a GPS vzdalenost se aktualizuji nezavisle, aby uzivatel videl plynule bezici cas a aktualni vzdalenost. Pri ukonceni se ulozi posledni vzorek, mereni se oznaci casem konce a znovu se prepocitaji statistiky.
@@ -61,7 +65,11 @@ Behem mereni `TrackingActivity` vytvori ongoing notifikaci `Aktivita probiha`. N
 
 ## Export
 
-Export pouziva standardni Android `ACTION_SEND`. CSV se posila jako text v `Intent.EXTRA_TEXT`, takze neni potreba `FileProvider` ani zapis do externiho uloziste.
+Export pouziva standardni Android `ACTION_SEND`. CSV se posila jako text v `Intent.EXTRA_TEXT`, takze neni potreba `FileProvider` ani zapis do externiho uloziste. CSV obsahuje souhrn mereni a vzorky vcetne rychlosti, tempa, vzdalenosti a GPS souradnic.
+
+## Mazani historie
+
+Mazani probiha pres `ActivityDatabase.deleteMeasurement()`. Metoda nejprve smaze vzorky z tabulky `samples` a potom souhrn z tabulky `measurements`, aby mazani fungovalo i bez spolehani na SQLite foreign key cascade.
 
 ## Testovani
 

@@ -63,6 +63,24 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/speedText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:text="Rychlost: 0.0 km/h"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/paceText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:text="Tempo: --/km"
+            android:textSize="18sp" />
+
+        <TextView
             android:id="@+id/sampleStatusText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

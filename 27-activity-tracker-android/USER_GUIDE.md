@@ -8,7 +8,7 @@
 4. Otevre se nova obrazovka mereni pres celou aplikaci.
 5. Pohybujte se s telefonem u sebe.
 
-Aplikace kazdych 5 sekund uklada vzorek s casem, poctem kroku nebo odhadem kroku, intenzitou pohybu a prirustkem vzdalenosti z GPS. Cas na obrazovce ale bezi plynule po sekundach. Behem mereni je v systemove liste zobrazena notifikace `Aktivita probiha`.
+Aplikace kazdych 5 sekund uklada vzorek s casem, poctem kroku nebo odhadem kroku, intenzitou pohybu, prirustkem vzdalenosti z GPS, rychlosti v km/h a tempem na kilometr. Cas na obrazovce ale bezi plynule po sekundach. Behem mereni je v systemove liste zobrazena notifikace `Aktivita probiha`.
 
 ## Ukonceni mereni
 
@@ -26,14 +26,20 @@ Klepnutim na radek v seznamu otevrite detail. Detail zobrazuje:
 - delku aktivity,
 - celkovy pocet kroku,
 - urazenou vzdalenost,
+- prumernou rychlost a tempo,
 - prumernou intenzitu,
 - pocet vzorku,
-- graf prubehu intenzity,
-- textovy seznam vzorku.
+- graf s prepinacem metriky: intenzita, rychlost, tempo nebo vzdalenost.
+
+Detail uz nezobrazuje dlouhy textovy seznam vsech vzorku. Vzorky zustavaji dostupne v CSV exportu.
+
+## Mazani mereni
+
+V historii klepnete na `Smazat` u vybraneho mereni a potvrdte dialog. Aplikace smaze souhrn i vsechny ulozene vzorky dane aktivity.
 
 ## Export CSV
 
-V detailu klepnete na `Sdilet CSV`. Android nabidne aplikace, pres ktere lze CSV text sdilet nebo ulozit.
+V detailu klepnete na `Sdilet CSV`. Android nabidne aplikace, pres ktere lze CSV text sdilet nebo ulozit. CSV obsahuje i vzorky s rychlosti, tempem, vzdalenosti a GPS souradnicemi.
 
 ## Poznamky k mereni
 

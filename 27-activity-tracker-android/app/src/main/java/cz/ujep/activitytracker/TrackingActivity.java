@@ -51,6 +51,8 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
     private TextView stepsText;
     private TextView distanceText;
     private TextView intensityText;
+    private TextView speedText;
+    private TextView paceText;
     private TextView sampleStatusText;
     private Button stopButton;
 
@@ -74,6 +76,8 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
     private double currentLongitude = Double.NaN;
     private double distanceMetersTotal;
     private double distanceMetersSinceLastSample;
+    private double lastSampleSpeedKmh;
+    private double lastSamplePaceSecondsPerKm;
 
     private final Runnable sampleRunnable = new Runnable() {
         @Override
@@ -114,6 +118,8 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         stepsText = findViewById(R.id.stepsText);
         distanceText = findViewById(R.id.distanceText);
         intensityText = findViewById(R.id.intensityText);
+        speedText = findViewById(R.id.speedText);
+        paceText = findViewById(R.id.paceText);
         sampleStatusText = findViewById(R.id.sampleStatusText);
         stopButton = findViewById(R.id.stopButton);
         stopButton.setEnabled(false);
@@ -269,6 +275,8 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         currentLongitude = Double.NaN;
         distanceMetersTotal = 0.0;
         distanceMetersSinceLastSample = 0.0;
+        lastSampleSpeedKmh = 0.0;
+        lastSamplePaceSecondsPerKm = 0.0;
         usingStepCounter = canUseStepCounter();
         locationTrackingEnabled = canUseLocation();
         measuring = true;
@@ -316,7 +324,21 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         double sampleDistance = distanceMetersSinceLastSample;
         distanceMetersSinceLastSample = 0.0;
         long now = System.currentTimeMillis();
-        database.insertSample(activeMeasurementId, now, deltaSteps, averageIntensity, currentLatitude, currentLongitude, sampleDistance);
+        long previousSampleAt = lastSampleAt == 0L ? startedAt : lastSampleAt;
+        long sampleDuration = Math.max(0L, now - previousSampleAt);
+        lastSampleSpeedKmh = ActivityStatsCalculator.calculateSpeedKmh(sampleDistance, sampleDuration);
+        lastSamplePaceSecondsPerKm = ActivityStatsCalculator.calculatePaceSecondsPerKm(sampleDistance, sampleDuration);
+        database.insertSample(
+                activeMeasurementId,
+                now,
+                deltaSteps,
+                averageIntensity,
+                currentLatitude,
+                currentLongitude,
+                sampleDistance,
+                lastSampleSpeedKmh,
+                lastSamplePaceSecondsPerKm
+        );
         lastSampleAt = now;
         sampleStatusText.setText("Posledni vzorek ulozen v " + android.text.format.DateFormat.format("HH:mm:ss", now));
         intensitySum = 0.0;
@@ -330,6 +352,8 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         stepsText.setText(String.format(Locale.US, "Kroky: %d", totalSteps));
         distanceText.setText("Vzdalenost: " + ActivityStatsCalculator.formatDistance(distanceMetersTotal));
         intensityText.setText("Intenzita: " + ActivityStatsCalculator.formatIntensity(lastIntensity));
+        speedText.setText("Rychlost: " + ActivityStatsCalculator.formatSpeed(lastSampleSpeedKmh));
+        paceText.setText("Tempo: " + ActivityStatsCalculator.formatPace(lastSamplePaceSecondsPerKm));
         if (lastSampleAt == 0L) {
             long untilFirstSample = Math.max(0L, SAMPLE_INTERVAL_MS - duration);
             sampleStatusText.setText("Prvni vzorek za " + Math.max(1L, untilFirstSample / 1000L) + " s");

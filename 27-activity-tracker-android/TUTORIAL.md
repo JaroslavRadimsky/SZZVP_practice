@@ -49,13 +49,14 @@ Android notifikace se pouziva jako viditelny indikator, ze aktivita prave probih
 6. Pridat `TrackingActivity` se samostatnou obrazovkou mereni.
 7. V `TrackingActivity` ziskat senzory pres `SensorManager` a polohu pres `LocationManager`.
 8. Pri otevreni `TrackingActivity` zalozit mereni v databazi a registrovat posluchace senzoru a GPS.
-9. Kazdych 5 sekund ulozit vzorek: cas, kroky nebo odhad kroku, intenzitu, souradnice a prirustek vzdalenosti.
+9. Kazdych 5 sekund ulozit vzorek: cas, kroky nebo odhad kroku, intenzitu, souradnice, prirustek vzdalenosti, rychlost a tempo.
 10. Kazdou sekundu aktualizovat casovac na obrazovce a v notifikaci.
 11. Pri stisku `Ukoncit a ulozit` ulozit posledni vzorek, doplnit cas konce a prepocitat souhrn.
 12. Vytvorit adapter pro seznam mereni.
-13. V detailu zobrazit souhrn, graf intenzity a vzorky.
+13. V detailu zobrazit souhrn a prepinatelny graf bez dlouheho seznamu vzorku.
 14. Pridat sdileni CSV pres `ACTION_SEND`.
-15. Doplnit unit test pro vypocet statistik.
+15. Pridat mazani mereni z historie.
+16. Doplnit unit test pro vypocet statistik.
 
 ## Mapovani na pozadavky
 
@@ -64,11 +65,13 @@ Android notifikace se pouziva jako viditelny indikator, ze aktivita prave probih
 - Plynule bezici cas: `TrackingActivity.timerRunnable`.
 - Notifikace v liste: `TrackingActivity.showOrUpdateNotification()`.
 - GPS vzdalenost: `TrackingActivity.onLocationChanged()`.
+- Rychlost a tempo vzorku: `ActivityStatsCalculator.calculateSpeedKmh()` a `calculatePaceSecondsPerKm()`.
 - Persistentni databaze: `ActivityDatabase`.
 - Seznam mereni: `ListView` s `MeasurementAdapter`.
 - Detail mereni: `MeasurementDetailActivity`.
 - Statistika delky, intenzity, kroku a vzdalenosti: `ActivityRecord` a `ActivityStatsCalculator`.
-- Graf: `IntensityGraphView`.
+- Prepinatelny graf: `IntensityGraphView`.
+- Mazani mereni: `ActivityDatabase.deleteMeasurement()`.
 - Export CSV: `MeasurementDetailActivity.shareCsv()`.
 
 ## Overeni
@@ -87,4 +90,5 @@ V emulatoru nebo telefonu:
 4. nekolik sekund se hybat,
 5. overit, ze cas bezi po sekundach, pribyva vzdalenost a v liste je notifikace,
 6. klepnout na `Ukoncit a ulozit`,
-7. otevrit detail a zkontrolovat statistiky, graf a CSV sdileni.
+7. otevrit detail a zkontrolovat statistiky, prepinani grafu a CSV sdileni,
+8. smazat vybrane mereni v historii.

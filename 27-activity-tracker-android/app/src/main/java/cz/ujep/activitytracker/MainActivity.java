@@ -1,6 +1,7 @@
 package cz.ujep.activitytracker;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -22,7 +23,7 @@ public class MainActivity extends Activity {
         Button startButton = findViewById(R.id.startButton);
         ListView measurementList = findViewById(R.id.measurementList);
 
-        adapter = new MeasurementAdapter(this);
+        adapter = new MeasurementAdapter(this, this::confirmDelete);
         measurementList.setAdapter(adapter);
         measurementList.setOnItemClickListener((parent, view, position, id) -> openDetail(adapter.getItem(position)));
 
@@ -49,5 +50,17 @@ public class MainActivity extends Activity {
         Intent intent = new Intent(this, MeasurementDetailActivity.class);
         intent.putExtra("measurementId", record.id);
         startActivity(intent);
+    }
+
+    private void confirmDelete(ActivityRecord record) {
+        new AlertDialog.Builder(this)
+                .setTitle("Smazat mereni")
+                .setMessage("Opravdu chcete smazat toto mereni z historie?")
+                .setPositiveButton("Smazat", (dialog, which) -> {
+                    database.deleteMeasurement(record.id);
+                    refreshList();
+                })
+                .setNegativeButton("Zrusit", null)
+                .show();
     }
 }
