@@ -2,12 +2,21 @@
 class MainActivity {
   - ActivityDatabase database
   - MeasurementAdapter adapter
+  + onCreate(Bundle)
+  - refreshList()
+  - openDetail(ActivityRecord)
+}
+
+class TrackingActivity {
+  - ActivityDatabase database
   - SensorManager sensorManager
+  - NotificationManager notificationManager
   - long activeMeasurementId
   + onCreate(Bundle)
   - startMeasurement()
-  - stopMeasurement()
+  - stopMeasurementAndFinish()
   - storeSample()
+  - showOrUpdateNotification()
 }
 
 class MeasurementDetailActivity {
@@ -55,9 +64,10 @@ class IntensityGraphView {
   + setSamples(List<ActivitySample>)
 }
 
-MainActivity --> ActivityDatabase
 MainActivity --> MeasurementAdapter
+MainActivity --> TrackingActivity
 MeasurementAdapter --> ActivityRecord
+TrackingActivity --> ActivityDatabase
 MeasurementDetailActivity --> ActivityDatabase
 MeasurementDetailActivity --> IntensityGraphView
 ActivityDatabase --> ActivityRecord

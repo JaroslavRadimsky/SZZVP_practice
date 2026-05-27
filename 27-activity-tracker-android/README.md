@@ -5,8 +5,12 @@ Jednoducha Android aplikace v Jave pro zaznam fyzicke aktivity behem dne. Projek
 ## Funkce
 
 - Zahajeni a ukonceni mereni aktivity.
+- Tlacitko pro zahajeni aktivity je na spodni hrane hlavni obrazovky.
+- Samotne mereni probiha na samostatne cele obrazovce.
 - Pravidelne ukladani vzorku kazdych 5 sekund.
+- Cas mereni se na obrazovce aktualizuje kazdou sekundu.
 - Ukladani casu vzorku, kroku nebo odhadu kroku a orientacni intenzity pohybu.
+- Ongoing notifikace v systemove liste po celou dobu probihajici aktivity.
 - Persistentni ulozeni dat do lokalni SQLite databaze.
 - Seznam ulozenych mereni.
 - Detail mereni se statistikami:

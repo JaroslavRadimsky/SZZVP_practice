@@ -10,9 +10,10 @@ Projekt je psany v Jave a je pripraveny pro Android Studio 4.0.1.
 
 ### Activity
 
-`Activity` reprezentuje jednu obrazovku aplikace. Projekt ma dve obrazovky:
+`Activity` reprezentuje jednu obrazovku aplikace. Projekt ma tri obrazovky:
 
-- `MainActivity` pro mereni a seznam,
+- `MainActivity` pro historii a spusteni mereni,
+- `TrackingActivity` pro samotne probihajici mereni,
 - `MeasurementDetailActivity` pro detail, graf a CSV export.
 
 ### SensorManager
@@ -28,7 +29,11 @@ SQLite je lokalni databaze primo v Androidu. Trida `ActivityDatabase` dedi z `SQ
 
 ### Intent
 
-`Intent` se pouziva pro otevreni detailu a pro sdileni CSV. Detail dostane pouze `measurementId` a data si docte z databaze.
+`Intent` se pouziva pro otevreni mereni, otevreni detailu a pro sdileni CSV. Detail dostane pouze `measurementId` a data si docte z databaze.
+
+### Notification
+
+Android notifikace se pouziva jako viditelny indikator, ze aktivita prave probiha. Na Androidu 8 a novejsim je nutne pred zobrazenim vytvorit `NotificationChannel`.
 
 ## Postup reseni
 
@@ -36,20 +41,24 @@ SQLite je lokalni databaze primo v Androidu. Trida `ActivityDatabase` dedi z `SQ
 2. Pridat manifest s hlavni aktivitou, detailni aktivitou a opravnenim `ACTIVITY_RECOGNITION`.
 3. Vytvorit modely `ActivityRecord` a `ActivitySample`.
 4. Implementovat `ActivityDatabase` se dvema tabulkami.
-5. Pridat hlavni layout se start/stop tlacitky, stavem mereni a seznamem.
-6. V `MainActivity` ziskat senzory pres `SensorManager`.
-7. Pri stisku `Zahajit` zalozit mereni v databazi a registrovat posluchace senzoru.
-8. Kazdych 5 sekund ulozit vzorek: cas, kroky nebo odhad kroku a intenzitu.
-9. Pri stisku `Ukoncit` ulozit posledni vzorek, doplnit cas konce a prepocitat souhrn.
-10. Vytvorit adapter pro seznam mereni.
-11. V detailu zobrazit souhrn, graf intenzity a vzorky.
-12. Pridat sdileni CSV pres `ACTION_SEND`.
-13. Doplnit unit test pro vypocet statistik.
+5. Pridat hlavni layout se seznamem a tlacitkem `Zahajit aktivitu` dole.
+6. Pridat `TrackingActivity` se samostatnou obrazovkou mereni.
+7. V `TrackingActivity` ziskat senzory pres `SensorManager`.
+8. Pri otevreni `TrackingActivity` zalozit mereni v databazi a registrovat posluchace senzoru.
+9. Kazdych 5 sekund ulozit vzorek: cas, kroky nebo odhad kroku a intenzitu.
+10. Kazdou sekundu aktualizovat casovac na obrazovce a v notifikaci.
+11. Pri stisku `Ukoncit a ulozit` ulozit posledni vzorek, doplnit cas konce a prepocitat souhrn.
+12. Vytvorit adapter pro seznam mereni.
+13. V detailu zobrazit souhrn, graf intenzity a vzorky.
+14. Pridat sdileni CSV pres `ACTION_SEND`.
+15. Doplnit unit test pro vypocet statistik.
 
 ## Mapovani na pozadavky
 
-- Zahajit a ukoncit mereni: `MainActivity.startMeasurement()` a `stopMeasurement()`.
-- Pravidelne ukladani casu a dat ze senzoru: `sampleRunnable` a `storeSample()`.
+- Zahajit a ukoncit mereni: `MainActivity` otevre `TrackingActivity`, ukonceni resi `TrackingActivity.stopMeasurementAndFinish()`.
+- Pravidelne ukladani casu a dat ze senzoru: `TrackingActivity.sampleRunnable` a `storeSample()`.
+- Plynule bezici cas: `TrackingActivity.timerRunnable`.
+- Notifikace v liste: `TrackingActivity.showOrUpdateNotification()`.
 - Persistentni databaze: `ActivityDatabase`.
 - Seznam mereni: `ListView` s `MeasurementAdapter`.
 - Detail mereni: `MeasurementDetailActivity`.
@@ -69,7 +78,8 @@ V emulatoru nebo telefonu:
 
 1. spustit aplikaci,
 2. povolit rozpoznavani aktivity,
-3. klepnout na `Zahajit`,
+3. klepnout na `Zahajit aktivitu`,
 4. nekolik sekund se hybat,
-5. klepnout na `Ukoncit`,
-6. otevrit detail a zkontrolovat statistiky, graf a CSV sdileni.
+5. overit, ze cas bezi po sekundach a v liste je notifikace,
+6. klepnout na `Ukoncit a ulozit`,
+7. otevrit detail a zkontrolovat statistiky, graf a CSV sdileni.

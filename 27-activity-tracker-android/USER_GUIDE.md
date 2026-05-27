@@ -4,16 +4,19 @@
 
 1. Spustte aplikaci `Activity Tracker`.
 2. Povolte opravneni pro rozpoznavani aktivity, pokud se system zepta.
-3. Klepnete na `Zahajit`.
-4. Pohybujte se s telefonem u sebe.
+3. Klepnete dole na `Zahajit aktivitu`.
+4. Otevre se nova obrazovka mereni pres celou aplikaci.
+5. Pohybujte se s telefonem u sebe.
 
-Aplikace zacne kazdych 5 sekund ukladat vzorek s casem, poctem kroku nebo odhadem kroku a intenzitou pohybu.
+Aplikace kazdych 5 sekund uklada vzorek s casem, poctem kroku nebo odhadem kroku a intenzitou pohybu. Cas na obrazovce ale bezi plynule po sekundach. Behem mereni je v systemove liste zobrazena notifikace `Aktivita probiha`.
 
 ## Ukonceni mereni
 
-1. Klepnete na `Ukoncit`.
+1. Na obrazovce mereni klepnete na `Ukoncit a ulozit`.
 2. Mereni se ulozi do SQLite databaze.
 3. V seznamu `Ulozena mereni` se objevi novy zaznam.
+
+Pokud stisknete tlacitko zpet, aplikace se nejprve zepta, zda chcete mereni ukoncit a ulozit.
 
 ## Detail mereni
 

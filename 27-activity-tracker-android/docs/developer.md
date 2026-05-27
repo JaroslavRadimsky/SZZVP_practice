@@ -4,7 +4,8 @@
 
 Aplikace navazuje na jednoduche vrstveni z projektu `05-rss-reader-android`:
 
-- `MainActivity` zobrazuje seznam mereni, zahajuje a ukoncuje mereni a cte senzory.
+- `MainActivity` zobrazuje historii mereni a spousti samostatnou obrazovku mereni.
+- `TrackingActivity` bezi po dobu aktivity, cte senzory, uklada vzorky a zobrazuje notifikaci.
 - `MeasurementDetailActivity` zobrazuje detail jednoho mereni, graf a export CSV.
 - `MeasurementAdapter` prevadi zaznamy z databaze na radky v `ListView`.
 - `ActivityDatabase` uklada mereni a vzorky do SQLite pres `SQLiteOpenHelper`.
@@ -42,7 +43,11 @@ Pokud krokomer neni dostupny, aplikace odhaduje kroky z vyraznych pohybovych spi
 
 ## Persistencni chovani
 
-Mereni se zalozi v databazi hned pri stisku `Zahajit`. Vzorky se ukladaji pravidelne v intervalu 5 sekund. Pri ukonceni se mereni oznaci casem konce a znovu se prepocitaji statistiky.
+Mereni se zalozi v databazi po otevreni `TrackingActivity`. Vzorky se ukladaji pravidelne v intervalu 5 sekund. UI casovac se aktualizuje nezavisle kazdou sekundu, aby uzivatel videl plynule bezici cas. Pri ukonceni se ulozi posledni vzorek, mereni se oznaci casem konce a znovu se prepocitaji statistiky.
+
+## Notifikace
+
+Behem mereni `TrackingActivity` vytvori ongoing notifikaci `Aktivita probiha`. Na Androidu 8 a novejsim se pouziva notification channel `active_measurement`. Notifikace se aktualizuje spolu s casovacem a zrusi se po ukonceni mereni.
 
 ## Export
 
