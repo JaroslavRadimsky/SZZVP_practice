@@ -3,12 +3,12 @@
 ## Zahajeni mereni
 
 1. Spustte aplikaci `Activity Tracker`.
-2. Povolte opravneni pro rozpoznavani aktivity, pokud se system zepta.
+2. Povolte opravneni pro rozpoznavani aktivity a polohu, pokud se system zepta.
 3. Klepnete dole na `Zahajit aktivitu`.
 4. Otevre se nova obrazovka mereni pres celou aplikaci.
 5. Pohybujte se s telefonem u sebe.
 
-Aplikace kazdych 5 sekund uklada vzorek s casem, poctem kroku nebo odhadem kroku a intenzitou pohybu. Cas na obrazovce ale bezi plynule po sekundach. Behem mereni je v systemove liste zobrazena notifikace `Aktivita probiha`.
+Aplikace kazdych 5 sekund uklada vzorek s casem, poctem kroku nebo odhadem kroku, intenzitou pohybu a prirustkem vzdalenosti z GPS. Cas na obrazovce ale bezi plynule po sekundach. Behem mereni je v systemove liste zobrazena notifikace `Aktivita probiha`.
 
 ## Ukonceni mereni
 
@@ -25,6 +25,7 @@ Klepnutim na radek v seznamu otevrite detail. Detail zobrazuje:
 - cas zacatku a konce,
 - delku aktivity,
 - celkovy pocet kroku,
+- urazenou vzdalenost,
 - prumernou intenzitu,
 - pocet vzorku,
 - graf prubehu intenzity,
@@ -36,4 +37,4 @@ V detailu klepnete na `Sdilet CSV`. Android nabidne aplikace, pres ktere lze CSV
 
 ## Poznamky k mereni
 
-Pokud telefon nema hardwarovy krokomer, aplikace pocita orientacni odhad kroku z akcelerometru. Intenzita je take orientacni a slouzi hlavne k porovnani prubehu aktivity v ramci jednoho mereni.
+Pokud telefon nema hardwarovy krokomer, aplikace pocita orientacni odhad kroku z akcelerometru. Pokud neni povolena poloha nebo neni dostupny GPS signal, vzdalenost zustane nulova nebo se bude aktualizovat az po ziskani polohy. Intenzita je take orientacni a slouzi hlavne k porovnani prubehu aktivity v ramci jednoho mereni.

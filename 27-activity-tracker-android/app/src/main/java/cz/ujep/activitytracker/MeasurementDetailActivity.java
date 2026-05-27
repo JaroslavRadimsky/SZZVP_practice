@@ -49,11 +49,12 @@ public class MeasurementDetailActivity extends Activity {
                 : "probiha";
         return String.format(
                 Locale.US,
-                "Zacatek: %s\nKonec: %s\nDelka aktivity: %s\nCelkovy pocet kroku: %d\nPrumerna intenzita: %s\nPocet ulozenych vzorku: %d",
+                "Zacatek: %s\nKonec: %s\nDelka aktivity: %s\nCelkovy pocet kroku: %d\nUrazena vzdalenost: %s\nPrumerna intenzita: %s\nPocet ulozenych vzorku: %d",
                 startText,
                 endText,
                 ActivityStatsCalculator.formatDuration(end - record.startedAt),
                 record.totalSteps,
+                ActivityStatsCalculator.formatDistance(record.distanceMeters),
                 ActivityStatsCalculator.formatIntensity(record.averageIntensity),
                 record.sampleCount
         );
@@ -70,6 +71,13 @@ public class MeasurementDetailActivity extends Activity {
                     .append(sample.steps)
                     .append(" | intenzita ")
                     .append(ActivityStatsCalculator.formatIntensity(sample.intensity))
+                    .append(" | vzdalenost +")
+                    .append(ActivityStatsCalculator.formatDistance(sample.distanceMeters));
+            if (!Double.isNaN(sample.latitude) && !Double.isNaN(sample.longitude)) {
+                builder.append(" | GPS ")
+                        .append(String.format(Locale.US, "%.5f, %.5f", sample.latitude, sample.longitude));
+            }
+            builder
                     .append('\n');
         }
         return builder.toString();
@@ -85,7 +93,7 @@ public class MeasurementDetailActivity extends Activity {
 
     private String buildCsv() {
         StringBuilder builder = new StringBuilder();
-        builder.append("measurement_id;started_at;ended_at;duration;total_steps;average_intensity\n");
+        builder.append("measurement_id;started_at;ended_at;duration;total_steps;distance_meters;average_intensity\n");
         builder.append(record.id)
                 .append(';')
                 .append(DateFormat.format("yyyy-MM-dd HH:mm:ss", record.startedAt))
@@ -96,15 +104,23 @@ public class MeasurementDetailActivity extends Activity {
                 .append(';')
                 .append(record.totalSteps)
                 .append(';')
+                .append(String.format(Locale.US, "%.2f", record.distanceMeters))
+                .append(';')
                 .append(String.format(Locale.US, "%.2f", record.averageIntensity))
                 .append("\n\n");
-        builder.append("sample_time;steps;intensity\n");
+        builder.append("sample_time;steps;intensity;distance_meters;latitude;longitude\n");
         for (ActivitySample sample : samples) {
             builder.append(DateFormat.format("yyyy-MM-dd HH:mm:ss", sample.measuredAt))
                     .append(';')
                     .append(sample.steps)
                     .append(';')
                     .append(String.format(Locale.US, "%.2f", sample.intensity))
+                    .append(';')
+                    .append(String.format(Locale.US, "%.2f", sample.distanceMeters))
+                    .append(';')
+                    .append(Double.isNaN(sample.latitude) ? "" : String.format(Locale.US, "%.6f", sample.latitude))
+                    .append(';')
+                    .append(Double.isNaN(sample.longitude) ? "" : String.format(Locale.US, "%.6f", sample.longitude))
                     .append('\n');
         }
         return builder.toString();

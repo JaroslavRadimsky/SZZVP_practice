@@ -10,6 +10,7 @@ Jednoducha Android aplikace v Jave pro zaznam fyzicke aktivity behem dne. Projek
 - Pravidelne ukladani vzorku kazdych 5 sekund.
 - Cas mereni se na obrazovce aktualizuje kazdou sekundu.
 - Ukladani casu vzorku, kroku nebo odhadu kroku a orientacni intenzity pohybu.
+- Sledovani urazene vzdalenosti pomoci GPS a ulozeni poslednich souradnic vzorku.
 - Ongoing notifikace v systemove liste po celou dobu probihajici aktivity.
 - Persistentni ulozeni dat do lokalni SQLite databaze.
 - Seznam ulozenych mereni.
@@ -17,6 +18,7 @@ Jednoducha Android aplikace v Jave pro zaznam fyzicke aktivity behem dne. Projek
   - delka aktivity,
   - prumerna intenzita,
   - celkovy pocet kroku,
+  - urazena vzdalenost,
   - pocet ulozenych vzorku.
 - Jednoduchy graf intenzity aktivity.
 - Sdileni namerenych dat jako CSV text.
@@ -59,7 +61,7 @@ APK po buildu:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Na Androidu 10 a novejsim aplikace pozada o opravneni `Activity recognition`, pokud je dostupny krokomer. Bez opravneni porad funguje odhad z pohyboveho senzoru.
+Na Androidu 10 a novejsim aplikace pozada o opravneni `Activity recognition`, pokud je dostupny krokomer. Pro GPS vzdalenost pozada o pristup k poloze. Bez techto opravneni porad funguje odhad z pohyboveho senzoru, jen bez presneho krokomeru nebo GPS vzdalenosti.
 
 ## Dokumentace
 

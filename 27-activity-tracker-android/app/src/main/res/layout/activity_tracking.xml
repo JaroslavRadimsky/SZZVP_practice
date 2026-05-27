@@ -45,6 +45,15 @@
             android:textSize="24sp" />
 
         <TextView
+            android:id="@+id/distanceText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:text="Vzdalenost: 0 m"
+            android:textSize="24sp" />
+
+        <TextView
             android:id="@+id/intensityText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

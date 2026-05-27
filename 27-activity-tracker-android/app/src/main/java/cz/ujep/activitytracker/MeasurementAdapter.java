@@ -61,9 +61,10 @@ public class MeasurementAdapter extends BaseAdapter {
         title.setText(String.format(Locale.US, "Mereni %s - %s", start, end));
         subtitle.setText(String.format(
                 Locale.US,
-                "Doba %s | kroky %d | intenzita %s | vzorky %d",
+                "Doba %s | kroky %d | %s | intenzita %s | vzorky %d",
                 ActivityStatsCalculator.formatDuration(duration),
                 record.totalSteps,
+                ActivityStatsCalculator.formatDistance(record.distanceMeters),
                 ActivityStatsCalculator.formatIntensity(record.averageIntensity),
                 record.sampleCount
         ));

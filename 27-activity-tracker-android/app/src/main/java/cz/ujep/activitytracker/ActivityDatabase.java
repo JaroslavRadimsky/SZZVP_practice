@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ActivityDatabase extends SQLiteOpenHelper {
     private static final String DB_NAME = "activity_tracker.db";
-    private static final int DB_VERSION = 1;
+    private static final int DB_VERSION = 2;
 
     public ActivityDatabase(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -24,6 +24,7 @@ public class ActivityDatabase extends SQLiteOpenHelper {
                 "started_at INTEGER NOT NULL," +
                 "ended_at INTEGER," +
                 "total_steps INTEGER NOT NULL DEFAULT 0," +
+                "distance_meters REAL NOT NULL DEFAULT 0," +
                 "average_intensity REAL NOT NULL DEFAULT 0," +
                 "sample_count INTEGER NOT NULL DEFAULT 0)");
         db.execSQL("CREATE TABLE samples (" +
@@ -32,15 +33,21 @@ public class ActivityDatabase extends SQLiteOpenHelper {
                 "measured_at INTEGER NOT NULL," +
                 "steps INTEGER NOT NULL," +
                 "intensity REAL NOT NULL," +
+                "latitude REAL," +
+                "longitude REAL," +
+                "distance_meters REAL NOT NULL DEFAULT 0," +
                 "FOREIGN KEY(measurement_id) REFERENCES measurements(id) ON DELETE CASCADE)");
         db.execSQL("CREATE INDEX idx_samples_measurement ON samples(measurement_id, measured_at)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS samples");
-        db.execSQL("DROP TABLE IF EXISTS measurements");
-        onCreate(db);
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE measurements ADD COLUMN distance_meters REAL NOT NULL DEFAULT 0");
+            db.execSQL("ALTER TABLE samples ADD COLUMN latitude REAL");
+            db.execSQL("ALTER TABLE samples ADD COLUMN longitude REAL");
+            db.execSQL("ALTER TABLE samples ADD COLUMN distance_meters REAL NOT NULL DEFAULT 0");
+        }
     }
 
     public long startMeasurement(long startedAt) {
@@ -49,13 +56,18 @@ public class ActivityDatabase extends SQLiteOpenHelper {
         return getWritableDatabase().insert("measurements", null, values);
     }
 
-    public void insertSample(long measurementId, long measuredAt, int steps, double intensity) {
+    public void insertSample(long measurementId, long measuredAt, int steps, double intensity, double latitude, double longitude, double distanceMeters) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("measurement_id", measurementId);
         values.put("measured_at", measuredAt);
         values.put("steps", Math.max(0, steps));
         values.put("intensity", Math.max(0.0, intensity));
+        if (!Double.isNaN(latitude) && !Double.isNaN(longitude)) {
+            values.put("latitude", latitude);
+            values.put("longitude", longitude);
+        }
+        values.put("distance_meters", Math.max(0.0, distanceMeters));
         db.insert("samples", null, values);
         updateSummary(db, measurementId, 0L);
     }
@@ -123,7 +135,10 @@ public class ActivityDatabase extends SQLiteOpenHelper {
                         cursor.getLong(cursor.getColumnIndexOrThrow("measurement_id")),
                         cursor.getLong(cursor.getColumnIndexOrThrow("measured_at")),
                         cursor.getInt(cursor.getColumnIndexOrThrow("steps")),
-                        cursor.getDouble(cursor.getColumnIndexOrThrow("intensity"))
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("intensity")),
+                        readNullableDouble(cursor, "latitude", Double.NaN),
+                        readNullableDouble(cursor, "longitude", Double.NaN),
+                        cursor.getDouble(cursor.getColumnIndexOrThrow("distance_meters"))
                 ));
             }
             return samples;
@@ -134,15 +149,16 @@ public class ActivityDatabase extends SQLiteOpenHelper {
 
     private void updateSummary(SQLiteDatabase db, long measurementId, long endedAt) {
         Cursor cursor = db.rawQuery(
-                "SELECT COALESCE(SUM(steps), 0), COALESCE(AVG(intensity), 0), COUNT(*) FROM samples WHERE measurement_id = ?",
+                "SELECT COALESCE(SUM(steps), 0), COALESCE(SUM(distance_meters), 0), COALESCE(AVG(intensity), 0), COUNT(*) FROM samples WHERE measurement_id = ?",
                 new String[]{String.valueOf(measurementId)}
         );
         try {
             if (cursor.moveToFirst()) {
                 ContentValues values = new ContentValues();
                 values.put("total_steps", cursor.getInt(0));
-                values.put("average_intensity", cursor.getDouble(1));
-                values.put("sample_count", cursor.getInt(2));
+                values.put("distance_meters", cursor.getDouble(1));
+                values.put("average_intensity", cursor.getDouble(2));
+                values.put("sample_count", cursor.getInt(3));
                 if (endedAt > 0L) {
                     values.put("ended_at", endedAt);
                 }
@@ -161,8 +177,14 @@ public class ActivityDatabase extends SQLiteOpenHelper {
                 cursor.getLong(cursor.getColumnIndexOrThrow("started_at")),
                 endedAt,
                 cursor.getInt(cursor.getColumnIndexOrThrow("total_steps")),
+                cursor.getDouble(cursor.getColumnIndexOrThrow("distance_meters")),
                 cursor.getDouble(cursor.getColumnIndexOrThrow("average_intensity")),
                 cursor.getInt(cursor.getColumnIndexOrThrow("sample_count"))
         );
+    }
+
+    private double readNullableDouble(Cursor cursor, String column, double fallback) {
+        int index = cursor.getColumnIndexOrThrow(column);
+        return cursor.isNull(index) ? fallback : cursor.getDouble(index);
     }
 }

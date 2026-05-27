@@ -10,12 +10,14 @@ class MainActivity {
 class TrackingActivity {
   - ActivityDatabase database
   - SensorManager sensorManager
+  - LocationManager locationManager
   - NotificationManager notificationManager
   - long activeMeasurementId
   + onCreate(Bundle)
   - startMeasurement()
   - stopMeasurementAndFinish()
   - storeSample()
+  - onLocationChanged(Location)
   - showOrUpdateNotification()
 }
 
@@ -33,7 +35,7 @@ class MeasurementAdapter {
 
 class ActivityDatabase {
   + startMeasurement(long): long
-  + insertSample(long, long, int, double)
+  + insertSample(long, long, int, double, double, double, double)
   + finishMeasurement(long, long)
   + listMeasurements(): List<ActivityRecord>
   + getMeasurement(long): ActivityRecord
@@ -45,6 +47,7 @@ class ActivityRecord {
   + long startedAt
   + long endedAt
   + int totalSteps
+  + double distanceMeters
   + double averageIntensity
 }
 
@@ -52,6 +55,9 @@ class ActivitySample {
   + long measuredAt
   + int steps
   + double intensity
+  + double latitude
+  + double longitude
+  + double distanceMeters
 }
 
 class ActivityStatsCalculator {

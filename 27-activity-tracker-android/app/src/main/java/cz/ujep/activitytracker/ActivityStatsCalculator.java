@@ -9,15 +9,17 @@ public class ActivityStatsCalculator {
 
     public static ActivityStats summarize(long startedAt, long endedAt, List<ActivitySample> samples) {
         int totalSteps = 0;
+        double distanceMeters = 0.0;
         double intensitySum = 0.0;
         for (ActivitySample sample : samples) {
             totalSteps += sample.steps;
+            distanceMeters += sample.distanceMeters;
             intensitySum += sample.intensity;
         }
         int count = samples.size();
         double averageIntensity = count == 0 ? 0.0 : intensitySum / count;
         long duration = Math.max(0L, endedAt - startedAt);
-        return new ActivityStats(duration, totalSteps, averageIntensity, count);
+        return new ActivityStats(duration, totalSteps, distanceMeters, averageIntensity, count);
     }
 
     public static String formatDuration(long durationMillis) {
@@ -43,5 +45,12 @@ public class ActivityStatsCalculator {
 
     public static String formatIntensity(double intensity) {
         return String.format(Locale.US, "%s (%.1f)", intensityLabel(intensity), intensity);
+    }
+
+    public static String formatDistance(double meters) {
+        if (meters >= 1000.0) {
+            return String.format(Locale.US, "%.2f km", meters / 1000.0);
+        }
+        return String.format(Locale.US, "%.0f m", Math.max(0.0, meters));
     }
 }

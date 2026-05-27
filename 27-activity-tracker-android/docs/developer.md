@@ -5,7 +5,7 @@
 Aplikace navazuje na jednoduche vrstveni z projektu `05-rss-reader-android`:
 
 - `MainActivity` zobrazuje historii mereni a spousti samostatnou obrazovku mereni.
-- `TrackingActivity` bezi po dobu aktivity, cte senzory, uklada vzorky a zobrazuje notifikaci.
+- `TrackingActivity` bezi po dobu aktivity, cte senzory a GPS, uklada vzorky a zobrazuje notifikaci.
 - `MeasurementDetailActivity` zobrazuje detail jednoho mereni, graf a export CSV.
 - `MeasurementAdapter` prevadi zaznamy z databaze na radky v `ListView`.
 - `ActivityDatabase` uklada mereni a vzorky do SQLite pres `SQLiteOpenHelper`.
@@ -22,6 +22,7 @@ Tabulka `measurements`:
 - `started_at` - cas zahajeni v milisekundach,
 - `ended_at` - cas ukonceni v milisekundach, muze byt prazdny,
 - `total_steps` - soucet ulozenych kroku,
+- `distance_meters` - soucet GPS vzdalenosti v metrech,
 - `average_intensity` - prumerna intenzita ze vzorku,
 - `sample_count` - pocet ulozenych vzorku.
 
@@ -32,6 +33,9 @@ Tabulka `samples`:
 - `measured_at` - cas vzorku v milisekundach,
 - `steps` - prirustek kroku od posledniho vzorku,
 - `intensity` - orientacni intenzita za interval.
+- `latitude` - posledni znama sirka pri ulozeni vzorku,
+- `longitude` - posledni znama delka pri ulozeni vzorku,
+- `distance_meters` - prirustek GPS vzdalenosti od minuleho vzorku.
 
 Po kazdem vlozeni vzorku se aktualizuje souhrn v tabulce `measurements`.
 
@@ -41,9 +45,15 @@ Aplikace preferuje `Sensor.TYPE_STEP_COUNTER`, pokud je dostupny a aplikace ma o
 
 Pokud krokomer neni dostupny, aplikace odhaduje kroky z vyraznych pohybovych spic. Tento odhad je orientacni, ale splnuje pozadavek na relevantni pohybova data ze senzoru.
 
+## GPS vzdalenost
+
+`TrackingActivity` pouziva `LocationManager` s providery `GPS_PROVIDER` a `NETWORK_PROVIDER`. Pri prvni pouzitelne poloze se ulozi referencni bod. Kazda dalsi poloha s presnosti do 50 metru prida vzdalenost od predchozi polohy, pokud prirustek neni nerealisticky velky. Pritom se prubezne aktualizuje celkova vzdalenost na obrazovce i v notifikaci.
+
+Pri ulozeni vzorku se do SQLite ulozi prirustek vzdalenosti od minuleho vzorku a posledni znama poloha. Pokud poloha neni povolena nebo neni k dispozici, aplikace stale uklada kroky a intenzitu, ale vzdalenost zustava 0.
+
 ## Persistencni chovani
 
-Mereni se zalozi v databazi po otevreni `TrackingActivity`. Vzorky se ukladaji pravidelne v intervalu 5 sekund. UI casovac se aktualizuje nezavisle kazdou sekundu, aby uzivatel videl plynule bezici cas. Pri ukonceni se ulozi posledni vzorek, mereni se oznaci casem konce a znovu se prepocitaji statistiky.
+Mereni se zalozi v databazi po otevreni `TrackingActivity`. Vzorky se ukladaji pravidelne v intervalu 5 sekund. UI casovac a GPS vzdalenost se aktualizuji nezavisle, aby uzivatel videl plynule bezici cas a aktualni vzdalenost. Pri ukonceni se ulozi posledni vzorek, mereni se oznaci casem konce a znovu se prepocitaji statistiky.
 
 ## Notifikace
 

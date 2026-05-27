@@ -23,6 +23,10 @@ Android poskytuje pristup k pohybovym senzoram pres `SensorManager`. Aplikace po
 - `TYPE_STEP_COUNTER` pro skutecny pocet kroku, pokud je dostupny,
 - `TYPE_LINEAR_ACCELERATION` nebo `TYPE_ACCELEROMETER` pro orientacni intenzitu pohybu.
 
+### LocationManager
+
+GPS vzdalenost se meri pres `LocationManager`. Aplikace posloucha GPS a sitove polohy, filtruje nepresne body a pomoci `Location.distanceTo()` scita prirustky vzdalenosti mezi polohami.
+
 ### SQLite
 
 SQLite je lokalni databaze primo v Androidu. Trida `ActivityDatabase` dedi z `SQLiteOpenHelper` a vytvari tabulky `measurements` a `samples`.
@@ -38,14 +42,14 @@ Android notifikace se pouziva jako viditelny indikator, ze aktivita prave probih
 ## Postup reseni
 
 1. Zalozit Android projekt s Gradle pluginem 4.0.1.
-2. Pridat manifest s hlavni aktivitou, detailni aktivitou a opravnenim `ACTIVITY_RECOGNITION`.
+2. Pridat manifest s hlavni aktivitou, detailni aktivitou a opravnenimi `ACTIVITY_RECOGNITION` a `ACCESS_FINE_LOCATION`.
 3. Vytvorit modely `ActivityRecord` a `ActivitySample`.
 4. Implementovat `ActivityDatabase` se dvema tabulkami.
 5. Pridat hlavni layout se seznamem a tlacitkem `Zahajit aktivitu` dole.
 6. Pridat `TrackingActivity` se samostatnou obrazovkou mereni.
-7. V `TrackingActivity` ziskat senzory pres `SensorManager`.
-8. Pri otevreni `TrackingActivity` zalozit mereni v databazi a registrovat posluchace senzoru.
-9. Kazdych 5 sekund ulozit vzorek: cas, kroky nebo odhad kroku a intenzitu.
+7. V `TrackingActivity` ziskat senzory pres `SensorManager` a polohu pres `LocationManager`.
+8. Pri otevreni `TrackingActivity` zalozit mereni v databazi a registrovat posluchace senzoru a GPS.
+9. Kazdych 5 sekund ulozit vzorek: cas, kroky nebo odhad kroku, intenzitu, souradnice a prirustek vzdalenosti.
 10. Kazdou sekundu aktualizovat casovac na obrazovce a v notifikaci.
 11. Pri stisku `Ukoncit a ulozit` ulozit posledni vzorek, doplnit cas konce a prepocitat souhrn.
 12. Vytvorit adapter pro seznam mereni.
@@ -59,10 +63,11 @@ Android notifikace se pouziva jako viditelny indikator, ze aktivita prave probih
 - Pravidelne ukladani casu a dat ze senzoru: `TrackingActivity.sampleRunnable` a `storeSample()`.
 - Plynule bezici cas: `TrackingActivity.timerRunnable`.
 - Notifikace v liste: `TrackingActivity.showOrUpdateNotification()`.
+- GPS vzdalenost: `TrackingActivity.onLocationChanged()`.
 - Persistentni databaze: `ActivityDatabase`.
 - Seznam mereni: `ListView` s `MeasurementAdapter`.
 - Detail mereni: `MeasurementDetailActivity`.
-- Statistika delky, intenzity a kroku: `ActivityRecord` a `ActivityStatsCalculator`.
+- Statistika delky, intenzity, kroku a vzdalenosti: `ActivityRecord` a `ActivityStatsCalculator`.
 - Graf: `IntensityGraphView`.
 - Export CSV: `MeasurementDetailActivity.shareCsv()`.
 
@@ -77,9 +82,9 @@ Spustte:
 V emulatoru nebo telefonu:
 
 1. spustit aplikaci,
-2. povolit rozpoznavani aktivity,
+2. povolit rozpoznavani aktivity a polohu,
 3. klepnout na `Zahajit aktivitu`,
 4. nekolik sekund se hybat,
-5. overit, ze cas bezi po sekundach a v liste je notifikace,
+5. overit, ze cas bezi po sekundach, pribyva vzdalenost a v liste je notifikace,
 6. klepnout na `Ukoncit a ulozit`,
 7. otevrit detail a zkontrolovat statistiky, graf a CSV sdileni.

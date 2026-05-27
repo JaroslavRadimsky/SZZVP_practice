@@ -13,6 +13,9 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,24 +24,32 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-public class TrackingActivity extends Activity implements SensorEventListener {
-    private static final int REQUEST_ACTIVITY_RECOGNITION = 10;
+public class TrackingActivity extends Activity implements SensorEventListener, LocationListener {
+    private static final int REQUEST_TRACKING_PERMISSIONS = 10;
     private static final int NOTIFICATION_ID = 2701;
     private static final String CHANNEL_ID = "active_measurement";
     private static final long SAMPLE_INTERVAL_MS = 5000L;
     private static final long TIMER_INTERVAL_MS = 1000L;
     private static final long STEP_PEAK_GAP_MS = 350L;
+    private static final long LOCATION_INTERVAL_MS = 2000L;
+    private static final float LOCATION_MIN_DISTANCE_M = 1f;
+    private static final float MAX_ACCEPTED_ACCURACY_M = 50f;
+    private static final float MAX_ACCEPTED_JUMP_M = 500f;
 
     private ActivityDatabase database;
     private SensorManager sensorManager;
+    private LocationManager locationManager;
     private NotificationManager notificationManager;
     private Sensor stepSensor;
     private Sensor motionSensor;
     private TextView sensorStatusText;
     private TextView clockText;
     private TextView stepsText;
+    private TextView distanceText;
     private TextView intensityText;
     private TextView sampleStatusText;
     private Button stopButton;
@@ -57,6 +68,12 @@ public class TrackingActivity extends Activity implements SensorEventListener {
     private int intensityEvents;
     private double lastIntensity;
     private long lastPeakAt;
+    private boolean locationTrackingEnabled;
+    private Location lastLocation;
+    private double currentLatitude = Double.NaN;
+    private double currentLongitude = Double.NaN;
+    private double distanceMetersTotal;
+    private double distanceMetersSinceLastSample;
 
     private final Runnable sampleRunnable = new Runnable() {
         @Override
@@ -87,6 +104,7 @@ public class TrackingActivity extends Activity implements SensorEventListener {
 
         database = new ActivityDatabase(this);
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         motionSensor = selectMotionSensor();
@@ -94,13 +112,14 @@ public class TrackingActivity extends Activity implements SensorEventListener {
         sensorStatusText = findViewById(R.id.sensorStatusText);
         clockText = findViewById(R.id.clockText);
         stepsText = findViewById(R.id.stepsText);
+        distanceText = findViewById(R.id.distanceText);
         intensityText = findViewById(R.id.intensityText);
         sampleStatusText = findViewById(R.id.sampleStatusText);
         stopButton = findViewById(R.id.stopButton);
         stopButton.setEnabled(false);
         stopButton.setOnClickListener(view -> stopMeasurementAndFinish());
 
-        requestActivityRecognitionIfNeededOrStart();
+        requestTrackingPermissionsIfNeededOrStart();
     }
 
     @Override
@@ -160,17 +179,66 @@ public class TrackingActivity extends Activity implements SensorEventListener {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_ACTIVITY_RECOGNITION && !measuring) {
+        if (requestCode == REQUEST_TRACKING_PERMISSIONS && !measuring) {
             startMeasurement();
         }
     }
 
-    private void requestActivityRecognitionIfNeededOrStart() {
+    @Override
+    public void onLocationChanged(Location location) {
+        if (!measuring || !isUsableLocation(location)) {
+            return;
+        }
+
+        currentLatitude = location.getLatitude();
+        currentLongitude = location.getLongitude();
+
+        if (lastLocation != null) {
+            float distance = lastLocation.distanceTo(location);
+            if (distance >= LOCATION_MIN_DISTANCE_M && distance <= MAX_ACCEPTED_JUMP_M) {
+                distanceMetersTotal += distance;
+                distanceMetersSinceLastSample += distance;
+            }
+        }
+        lastLocation = new Location(location);
+        updateLiveStats();
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+        locationTrackingEnabled = canUseLocation();
+        registerLocationUpdates();
+        updateSensorStatus();
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+        locationTrackingEnabled = canUseLocation();
+        updateSensorStatus();
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    private void requestTrackingPermissionsIfNeededOrStart() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            startMeasurement();
+            return;
+        }
+
+        List<String> missingPermissions = new ArrayList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
                 && stepSensor != null
                 && checkSelfPermission(Manifest.permission.ACTIVITY_RECOGNITION) != PackageManager.PERMISSION_GRANTED) {
-            sensorStatusText.setText("Cekam na opravneni pro krokomer.");
-            requestPermissions(new String[]{Manifest.permission.ACTIVITY_RECOGNITION}, REQUEST_ACTIVITY_RECOGNITION);
+            missingPermissions.add(Manifest.permission.ACTIVITY_RECOGNITION);
+        }
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            missingPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (!missingPermissions.isEmpty()) {
+            sensorStatusText.setText("Cekam na opravneni pro senzory a GPS.");
+            requestPermissions(missingPermissions.toArray(new String[0]), REQUEST_TRACKING_PERMISSIONS);
             return;
         }
         startMeasurement();
@@ -196,11 +264,18 @@ public class TrackingActivity extends Activity implements SensorEventListener {
         lastIntensity = 0.0;
         lastPeakAt = 0L;
         lastSampleAt = 0L;
+        lastLocation = null;
+        currentLatitude = Double.NaN;
+        currentLongitude = Double.NaN;
+        distanceMetersTotal = 0.0;
+        distanceMetersSinceLastSample = 0.0;
         usingStepCounter = canUseStepCounter();
+        locationTrackingEnabled = canUseLocation();
         measuring = true;
 
         createNotificationChannelIfNeeded();
         registerSensors();
+        registerLocationUpdates();
         stopButton.setEnabled(true);
         updateSensorStatus();
         updateLiveStats();
@@ -224,6 +299,7 @@ public class TrackingActivity extends Activity implements SensorEventListener {
         measuring = false;
         activeMeasurementId = -1L;
         unregisterSensors();
+        unregisterLocationUpdates();
         handler.removeCallbacks(sampleRunnable);
         handler.removeCallbacks(timerRunnable);
         cancelNotification();
@@ -237,8 +313,10 @@ public class TrackingActivity extends Activity implements SensorEventListener {
         int deltaSteps = Math.max(0, totalSteps - lastStoredSteps);
         lastStoredSteps = totalSteps;
         double averageIntensity = intensityEvents == 0 ? lastIntensity : intensitySum / intensityEvents;
+        double sampleDistance = distanceMetersSinceLastSample;
+        distanceMetersSinceLastSample = 0.0;
         long now = System.currentTimeMillis();
-        database.insertSample(activeMeasurementId, now, deltaSteps, averageIntensity);
+        database.insertSample(activeMeasurementId, now, deltaSteps, averageIntensity, currentLatitude, currentLongitude, sampleDistance);
         lastSampleAt = now;
         sampleStatusText.setText("Posledni vzorek ulozen v " + android.text.format.DateFormat.format("HH:mm:ss", now));
         intensitySum = 0.0;
@@ -250,6 +328,7 @@ public class TrackingActivity extends Activity implements SensorEventListener {
         long duration = System.currentTimeMillis() - startedAt;
         clockText.setText(ActivityStatsCalculator.formatDuration(duration));
         stepsText.setText(String.format(Locale.US, "Kroky: %d", totalSteps));
+        distanceText.setText("Vzdalenost: " + ActivityStatsCalculator.formatDistance(distanceMetersTotal));
         intensityText.setText("Intenzita: " + ActivityStatsCalculator.formatIntensity(lastIntensity));
         if (lastSampleAt == 0L) {
             long untilFirstSample = Math.max(0L, SAMPLE_INTERVAL_MS - duration);
@@ -268,6 +347,40 @@ public class TrackingActivity extends Activity implements SensorEventListener {
 
     private void unregisterSensors() {
         sensorManager.unregisterListener(this);
+    }
+
+    private void registerLocationUpdates() {
+        if (!locationTrackingEnabled) {
+            return;
+        }
+        try {
+            locationManager.removeUpdates(this);
+            if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                locationManager.requestLocationUpdates(
+                        LocationManager.GPS_PROVIDER,
+                        LOCATION_INTERVAL_MS,
+                        LOCATION_MIN_DISTANCE_M,
+                        this
+                );
+            }
+            if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                locationManager.requestLocationUpdates(
+                        LocationManager.NETWORK_PROVIDER,
+                        LOCATION_INTERVAL_MS,
+                        LOCATION_MIN_DISTANCE_M,
+                        this
+                );
+            }
+        } catch (SecurityException ignored) {
+            locationTrackingEnabled = false;
+        }
+    }
+
+    private void unregisterLocationUpdates() {
+        try {
+            locationManager.removeUpdates(this);
+        } catch (SecurityException ignored) {
+        }
     }
 
     private Sensor selectMotionSensor() {
@@ -299,14 +412,34 @@ public class TrackingActivity extends Activity implements SensorEventListener {
         return true;
     }
 
-    private void updateSensorStatus() {
-        if (usingStepCounter) {
-            sensorStatusText.setText("Pouziva se krokomer a pohybovy senzor.");
-        } else if (motionSensor != null) {
-            sensorStatusText.setText("Pouziva se odhad kroku z pohyboveho senzoru.");
-        } else {
-            sensorStatusText.setText("Zarizeni nema dostupny pohybovy senzor.");
+    private boolean canUseLocation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return false;
         }
+        return locationManager != null
+                && (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+                || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER));
+    }
+
+    private void updateSensorStatus() {
+        String gpsText = locationTrackingEnabled
+                ? " GPS vzdalenost je aktivni."
+                : " GPS vzdalenost neni dostupna.";
+        if (usingStepCounter) {
+            sensorStatusText.setText("Pouziva se krokomer a pohybovy senzor." + gpsText);
+        } else if (motionSensor != null) {
+            sensorStatusText.setText("Pouziva se odhad kroku z pohyboveho senzoru." + gpsText);
+        } else {
+            sensorStatusText.setText("Zarizeni nema dostupny pohybovy senzor." + gpsText);
+        }
+    }
+
+    private boolean isUsableLocation(Location location) {
+        if (location == null) {
+            return false;
+        }
+        return !location.hasAccuracy() || location.getAccuracy() <= MAX_ACCEPTED_ACCURACY_M;
     }
 
     private void createNotificationChannelIfNeeded() {
@@ -337,9 +470,10 @@ public class TrackingActivity extends Activity implements SensorEventListener {
         int totalSteps = usingStepCounter ? currentStepTotal : estimatedSteps;
         String text = String.format(
                 Locale.US,
-                "Cas %s | kroky %d",
+                "Cas %s | kroky %d | %s",
                 ActivityStatsCalculator.formatDuration(System.currentTimeMillis() - startedAt),
-                totalSteps
+                totalSteps,
+                ActivityStatsCalculator.formatDistance(distanceMetersTotal)
         );
 
         Notification.Builder builder;
