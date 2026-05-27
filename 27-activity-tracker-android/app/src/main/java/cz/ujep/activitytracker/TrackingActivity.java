@@ -31,14 +31,18 @@ import java.util.Locale;
 public class TrackingActivity extends Activity implements SensorEventListener, LocationListener {
     private static final int REQUEST_TRACKING_PERMISSIONS = 10;
     private static final int NOTIFICATION_ID = 2701;
+    private static final int INACTIVITY_NOTIFICATION_ID = 2702;
     private static final String CHANNEL_ID = "active_measurement";
+    private static final String INACTIVITY_CHANNEL_ID = "activity_inactivity";
     private static final long SAMPLE_INTERVAL_MS = 5000L;
     private static final long TIMER_INTERVAL_MS = 1000L;
     private static final long STEP_PEAK_GAP_MS = 350L;
+    private static final long INACTIVITY_THRESHOLD_MS = 30000L;
     private static final long LOCATION_INTERVAL_MS = 2000L;
     private static final float LOCATION_MIN_DISTANCE_M = 1f;
     private static final float MAX_ACCEPTED_ACCURACY_M = 50f;
     private static final float MAX_ACCEPTED_JUMP_M = 500f;
+    private static final double MOVEMENT_INTENSITY_THRESHOLD = 1.2;
 
     private ActivityDatabase database;
     private SensorManager sensorManager;
@@ -78,6 +82,8 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
     private double distanceMetersSinceLastSample;
     private double lastSampleSpeedKmh;
     private double lastSamplePaceSecondsPerKm;
+    private long lastMovementAt;
+    private boolean inactivityNotificationShown;
 
     private final Runnable sampleRunnable = new Runnable() {
         @Override
@@ -95,6 +101,7 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
             if (measuring) {
                 updateLiveStats();
                 showOrUpdateNotification();
+                checkInactivityNotification();
                 handler.postDelayed(this, TIMER_INTERVAL_MS);
             }
         }
@@ -160,7 +167,11 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
             if (stepBase < 0) {
                 stepBase = rawSteps;
             }
+            int previousStepTotal = currentStepTotal;
             currentStepTotal = Math.max(0, rawSteps - stepBase);
+            if (currentStepTotal > previousStepTotal) {
+                markMovement();
+            }
             return;
         }
 
@@ -168,6 +179,9 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         lastIntensity = intensity;
         intensitySum += intensity;
         intensityEvents++;
+        if (intensity >= MOVEMENT_INTENSITY_THRESHOLD) {
+            markMovement();
+        }
 
         if (!usingStepCounter && intensity > 2.2) {
             long now = System.currentTimeMillis();
@@ -204,6 +218,7 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
             if (distance >= LOCATION_MIN_DISTANCE_M && distance <= MAX_ACCEPTED_JUMP_M) {
                 distanceMetersTotal += distance;
                 distanceMetersSinceLastSample += distance;
+                markMovement();
             }
         }
         lastLocation = new Location(location);
@@ -277,6 +292,8 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         distanceMetersSinceLastSample = 0.0;
         lastSampleSpeedKmh = 0.0;
         lastSamplePaceSecondsPerKm = 0.0;
+        lastMovementAt = startedAt;
+        inactivityNotificationShown = false;
         usingStepCounter = canUseStepCounter();
         locationTrackingEnabled = canUseLocation();
         measuring = true;
@@ -311,6 +328,7 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         handler.removeCallbacks(sampleRunnable);
         handler.removeCallbacks(timerRunnable);
         cancelNotification();
+        cancelInactivityNotification();
     }
 
     private void storeSample() {
@@ -468,13 +486,21 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
 
     private void createNotificationChannelIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
+        NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
                     "Probihajici aktivita",
                     NotificationManager.IMPORTANCE_LOW
             );
             channel.setDescription("Informace o prave merene fyzicke aktivite.");
             notificationManager.createNotificationChannel(channel);
+
+            NotificationChannel inactivityChannel = new NotificationChannel(
+                    INACTIVITY_CHANNEL_ID,
+                    "Upozorneni na neaktivitu",
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+            inactivityChannel.setDescription("Upozorneni pri delsi neaktivite behem mereni.");
+            notificationManager.createNotificationChannel(inactivityChannel);
         }
     }
 
@@ -521,7 +547,59 @@ public class TrackingActivity extends Activity implements SensorEventListener, L
         notificationManager.notify(NOTIFICATION_ID, notification);
     }
 
+    private void checkInactivityNotification() {
+        if (!measuring || inactivityNotificationShown) {
+            return;
+        }
+        long inactiveFor = System.currentTimeMillis() - lastMovementAt;
+        if (inactiveFor >= INACTIVITY_THRESHOLD_MS) {
+            showInactivityNotification();
+        }
+    }
+
+    private void showInactivityNotification() {
+        Intent intent = new Intent(this, TrackingActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= PendingIntent.FLAG_IMMUTABLE;
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intent, flags);
+
+        Notification.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder = new Notification.Builder(this, INACTIVITY_CHANNEL_ID);
+        } else {
+            builder = new Notification.Builder(this);
+            builder.setPriority(Notification.PRIORITY_DEFAULT);
+        }
+
+        Notification notification = builder
+                .setSmallIcon(R.drawable.ic_activity_notification)
+                .setContentTitle("Dlouho se nehýbeš")
+                .setContentText("Nechceš aktivitu ukončit?")
+                .setStyle(new Notification.BigTextStyle().bigText("Dlouho se nehýbeš. Nechceš aktivitu ukončit?"))
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                .setOnlyAlertOnce(true)
+                .build();
+        inactivityNotificationShown = true;
+        notificationManager.notify(INACTIVITY_NOTIFICATION_ID, notification);
+    }
+
+    private void markMovement() {
+        lastMovementAt = System.currentTimeMillis();
+        if (inactivityNotificationShown) {
+            cancelInactivityNotification();
+        }
+    }
+
     private void cancelNotification() {
         notificationManager.cancel(NOTIFICATION_ID);
+    }
+
+    private void cancelInactivityNotification() {
+        inactivityNotificationShown = false;
+        notificationManager.cancel(INACTIVITY_NOTIFICATION_ID);
     }
 }

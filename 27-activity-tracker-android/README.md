@@ -13,6 +13,7 @@ Jednoduchá Android aplikace v Javě pro záznam fyzické aktivity během dne. P
 - Sledování uražené vzdálenosti pomocí GPS a uložení posledních souřadnic vzorku.
 - Výpočet rychlosti v km/h a tempa ve formátu minuty:sekundy na kilometr pro každý vzorek.
 - Průběžná notifikace v systémové liště po celou dobu probíhající aktivity.
+- Upozornění po 30 sekundách bez pohybu s dotazem, zda uživatel nechce aktivitu ukončit.
 - Persistentní uložení dat do lokální SQLite databáze.
 - Seznam uložených měření.
 - Mazání měření z historie.

@@ -63,6 +63,8 @@ Měření se založí v databázi po otevření `TrackingActivity`. Vzorky se uk
 
 Během měření `TrackingActivity` vytvoří průběžnou notifikaci `Aktivita probiha`. Na Androidu 8 a novějším se používá notification channel `active_measurement`. Notifikace se aktualizuje spolu s časovačem a zruší se po ukončení měření.
 
+Kromě toho se sleduje čas posledního pohybu. Pohyb se obnovuje při nových krocích, výraznější akceleraci nebo GPS posunu. Pokud se uživatel 30 sekund nehýbe, aplikace zobrazí samostatnou notifikaci `Dlouho se nehýbeš` s dotazem na ukončení aktivity. Jakmile se uživatel znovu pohne nebo měření skončí, notifikace neaktivity se zruší.
+
 ## Export
 
 Export používá standardní Android `ACTION_SEND`. CSV se posílá jako text v `Intent.EXTRA_TEXT`, takže není potřeba `FileProvider` ani zápis do externího úložiště. CSV obsahuje souhrn měření a vzorky včetně rychlosti, tempa, vzdálenosti a GPS souřadnic.

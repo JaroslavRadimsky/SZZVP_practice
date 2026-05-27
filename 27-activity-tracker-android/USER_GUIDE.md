@@ -10,6 +10,8 @@
 
 Aplikace každých 5 sekund ukládá vzorek s časem, počtem kroků nebo odhadem kroků, intenzitou pohybu, přírůstkem vzdálenosti z GPS, rychlostí v km/h a tempem na kilometr. Čas na obrazovce ale běží plynule po sekundách. Během měření je v systémové liště zobrazena notifikace `Aktivita probiha`.
 
+Pokud aplikace 30 sekund nezaznamená kroky, výraznější pohyb telefonu ani GPS posun, zobrazí upozornění `Dlouho se nehýbeš` s dotazem, zda nechcete aktivitu ukončit. Klepnutím na upozornění se vrátíte na obrazovku měření.
+
 ## Ukončení měření
 
 1. Na obrazovce měření klepněte na `Ukoncit a ulozit`.
