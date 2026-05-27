@@ -16,6 +16,7 @@ Workspace obsahuje samostatne projekty podle zadani v `SZZVP-SW.pdf` a `SZZVP-DB
 10. `10-db-01-relational-olap` - PostgreSQL projekt pro relacni model, ETL, SQL agregace, vizualizace a OLAP navrh.
 11. `11-db-02-nosql-mongodb` - MongoDB projekt s dokumentovym modelem, agregacnimi pipelines a vizualizaci.
 12. `12-db-04-auto-mpg-ml` - Python/Jupyter protokol pro Auto MPG regresi a porovnani ML modelu.
+13. `27-activity-tracker-android` - Android aplikace pro zaznam fyzicke aktivity, SQLite, senzory, statistiky, graf a CSV export.
 
 Kazdy projekt ma vlastni `README.md` s navodem ke spusteni a overeni a `TUTORIAL.md` s podrobnym postupem reseni, vyvojem od nuly a vysvetlenim teoretickych prvku.
 

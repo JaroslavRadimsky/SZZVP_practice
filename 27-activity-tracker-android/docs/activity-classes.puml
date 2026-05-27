@@ -1,0 +1,66 @@
+@startuml
+class MainActivity {
+  - ActivityDatabase database
+  - MeasurementAdapter adapter
+  - SensorManager sensorManager
+  - long activeMeasurementId
+  + onCreate(Bundle)
+  - startMeasurement()
+  - stopMeasurement()
+  - storeSample()
+}
+
+class MeasurementDetailActivity {
+  - ActivityRecord record
+  - List<ActivitySample> samples
+  + onCreate(Bundle)
+  - shareCsv()
+}
+
+class MeasurementAdapter {
+  - List<ActivityRecord> records
+  + setRecords(List<ActivityRecord>)
+}
+
+class ActivityDatabase {
+  + startMeasurement(long): long
+  + insertSample(long, long, int, double)
+  + finishMeasurement(long, long)
+  + listMeasurements(): List<ActivityRecord>
+  + getMeasurement(long): ActivityRecord
+  + listSamples(long): List<ActivitySample>
+}
+
+class ActivityRecord {
+  + long id
+  + long startedAt
+  + long endedAt
+  + int totalSteps
+  + double averageIntensity
+}
+
+class ActivitySample {
+  + long measuredAt
+  + int steps
+  + double intensity
+}
+
+class ActivityStatsCalculator {
+  + summarize(long, long, List<ActivitySample>): ActivityStats
+  + formatDuration(long): String
+  + intensityLabel(double): String
+}
+
+class IntensityGraphView {
+  + setSamples(List<ActivitySample>)
+}
+
+MainActivity --> ActivityDatabase
+MainActivity --> MeasurementAdapter
+MeasurementAdapter --> ActivityRecord
+MeasurementDetailActivity --> ActivityDatabase
+MeasurementDetailActivity --> IntensityGraphView
+ActivityDatabase --> ActivityRecord
+ActivityDatabase --> ActivitySample
+ActivityStatsCalculator --> ActivitySample
+@enduml
